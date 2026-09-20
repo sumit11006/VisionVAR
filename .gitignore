@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+venv/
+env/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+visionvar.db
+models/*.pt
+backend/models/
+data/uploads/
+.DS_Store
