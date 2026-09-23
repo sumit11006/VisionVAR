@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+/* ─── VisionVAR Design System — Tailwind v4 CSS-first theme ─────────────────── */
+
+@theme {
+  /* Colors */
+  --color-surface-container-lowest: #0a0e14;
+  --color-surface-container-low: #181c22;
+  --color-surface-container: #1c2026;
+  --color-surface-container-high: #262a31;
+  --color-surface-container-highest: #31353c;
+  --color-surface-bright: #353940;
+  --color-surface: #10141a;
+  --color-surface-dim: #10141a;
+  --color-background: #10141a;
+  --color-outline-variant: #3b4b3d;
+  --color-outline: #849585;
+  --color-on-surface: #dfe2eb;
+  --color-on-surface-variant: #b9cbb9;
+  --color-on-background: #dfe2eb;
+
+  --color-primary: #f1ffef;
+  --color-primary-container: #00ff88;
+  --color-primary-fixed: #60ff99;
+  --color-primary-fixed-dim: #00e479;
+  --color-on-primary: #003919;
+  --color-on-primary-container: #007139;
+  --color-on-primary-fixed: #00210c;
+  --color-on-primary-fixed-variant: #005228;
+  --color-inverse-primary: #006d37;
+
+  --color-secondary: #bdf4ff;
+  --color-secondary-container: #00e3fd;
+  --color-secondary-fixed: #9cf0ff;
+  --color-secondary-fixed-dim: #00daf3;
+  --color-on-secondary: #00363d;
+  --color-on-secondary-container: #00616d;
+  --color-on-secondary-fixed: #001f24;
+  --color-on-secondary-fixed-variant: #004f58;
+
+  --color-tertiary: #fdf9ff;
+  --color-tertiary-container: #dcdbff;
+  --color-tertiary-fixed: #e1e0ff;
+  --color-tertiary-fixed-dim: #c0c1ff;
+  --color-on-tertiary: #1000a9;
+  --color-on-tertiary-container: #4c4eda;
+  --color-on-tertiary-fixed: #07006c;
+  --color-on-tertiary-fixed-variant: #2f2ebe;
+
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  --color-inverse-surface: #dfe2eb;
+  --color-inverse-on-surface: #2d3137;
+  --color-surface-tint: #00e479;
+  --color-surface-variant: #31353c;
+
+  /* Border Radius */
+  --radius-DEFAULT: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 0.75rem;
+  --spacing-gutter: 0.75rem;
+  --spacing-space-lg: 1rem;
+  --spacing-margin: 1rem;
+  --spacing-space-xl: 1.5rem;
+
+  /* Font Families */
+  --font-body-lg: 'Inter', sans-serif;
+  --font-body-md: 'Inter', sans-serif;
+  --font-body-sm: 'Inter', sans-serif;
+  --font-headline-lg: 'Space Grotesk', sans-serif;
+  --font-headline-md: 'Space Grotesk', sans-serif;
+  --font-headline-sm: 'Space Grotesk', sans-serif;
+  --font-display-xl: 'Space Grotesk', sans-serif;
+  --font-label-lg: 'JetBrains Mono', monospace;
+  --font-label-md: 'JetBrains Mono', monospace;
+  --font-label-sm: 'JetBrains Mono', monospace;
+}
+
+/* ─── Base resets ──────────────────────────────────────────────────────────── */
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Material Symbols ─────────────────────────────────────────────────────── */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: inherit;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0e14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c2026;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b4b3d;
+}
+
+/* ─── Scrollbar Utilities ─────────────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.mask-edge {
+  mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+}
+
+/* ─── Grid & Glow patterns ──────────────────────────────────────────────────── */
+
+.hud-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(59,75,61,0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59,75,61,0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.laser-grid {
+  background-image:
+    linear-gradient(to right, rgba(59,75,61,0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59,75,61,0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.telemetry-grid {
+  background-size: 24px 24px;
+  background-image:
+    linear-gradient(to right, rgba(59,75,61,0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59,75,61,0.15) 1px, transparent 1px);
+}
+
+.radar-pitch {
+  background-image:
+    radial-gradient(circle at center, rgba(0,228,121,0.04) 0%, transparent 70%),
+    linear-gradient(to right, rgba(59,75,61,0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59,75,61,0.25) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+.tactical-grid-bg {
+  background-image:
+    linear-gradient(rgba(59,75,61,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,75,61,0.18) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ─── Glow effects ──────────────────────────────────────────────────────────── */
+
+.glow-cyan {
+  box-shadow: 0 0 16px rgba(0,218,243,0.4);
+}
+.glow-emerald {
+  box-shadow: 0 0 16px rgba(0,228,121,0.4);
+}
+.laser-glow-emerald {
+  box-shadow: 0 0 16px rgba(0,228,121,0.25);
+}
+.laser-glow-cyan {
+  box-shadow: 0 0 16px rgba(0,218,243,0.25);
+}
+.laser-glow-crimson {
+  box-shadow: 0 0 16px rgba(255,180,171,0.3);
+}
+
+/* ─── Laser plane overlays (Offside Review) ─────────────────────────────────── */
+
+.laser-plane-red {
+  background: linear-gradient(180deg, rgba(255,51,102,0.45) 0%, rgba(255,51,102,0.08) 85%, transparent 100%);
+  box-shadow: 0 0 14px rgba(255,51,102,0.8), inset 0 0 10px rgba(255,51,102,0.3);
+}
+.laser-plane-cyan {
+  background: linear-gradient(180deg, rgba(0,218,243,0.45) 0%, rgba(0,218,243,0.08) 85%, transparent 100%);
+  box-shadow: 0 0 14px rgba(0,218,243,0.8), inset 0 0 10px rgba(0,218,243,0.3);
+}
+.laser-line-green {
+  box-shadow: 0 0 12px rgba(0,255,136,0.9);
+}
+
+/* ─── Custom scrubber / range input ─────────────────────────────────────────── */
+
+.timeline-scrub-bar {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: #262a31;
+  outline: none;
+  cursor: ew-resize;
+}
+.timeline-scrub-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 10px;
+  border-radius: 5px;
+  background: #00e479;
+  box-shadow: 0 0 8px rgba(0,228,121,0.6);
+  cursor: ew-resize;
+}
+.timeline-scrub-bar::-moz-range-thumb {
+  width: 18px;
+  height: 10px;
+  border-radius: 5px;
+  background: #00e479;
+  border: none;
+  box-shadow: 0 0 8px rgba(0,228,121,0.6);
+  cursor: ew-resize;
+}
+
+/* ─── Scanline ────────────────────────────────────────────────────────────────── */
+.scanline {
+  background: linear-gradient(to bottom, rgba(0,228,121,0), rgba(0,228,121,0.05) 50%, rgba(0,228,121,0));
+}
+
+/* ─── Custom keyframes ──────────────────────────────────────────────────────── */
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes hud-scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+.hud-scanner {
+  animation: hud-scan 4s linear infinite;
+}
+
+/* ─── Typography utility classes ─────────────────────────────────────────────── */
+/* These match the Stitch Tailwind config fontSize definitions */
+
+.text-display-xl    { font-size: 48px; line-height: 52px; letter-spacing: -0.03em; font-weight: 700; }
+.text-headline-lg   { font-size: 30px; line-height: 36px; letter-spacing: -0.02em; font-weight: 600; }
+.text-headline-md   { font-size: 20px; line-height: 26px; letter-spacing: -0.01em; font-weight: 600; }
+.text-headline-sm   { font-size: 16px; line-height: 22px; letter-spacing: 0; font-weight: 600; }
+.text-body-lg       { font-size: 15px; line-height: 22px; letter-spacing: -0.005em; font-weight: 400; }
+.text-body-md       { font-size: 13px; line-height: 18px; letter-spacing: 0; font-weight: 400; }
+.text-body-sm       { font-size: 11px; line-height: 16px; letter-spacing: 0.01em; font-weight: 400; }
+.text-label-lg      { font-size: 13px; line-height: 18px; letter-spacing: 0.02em; font-weight: 500; }
+.text-label-md      { font-size: 11px; line-height: 14px; letter-spacing: 0.04em; font-weight: 500; }
+.text-label-sm      { font-size: 9px;  line-height: 12px; letter-spacing: 0.06em; font-weight: 600; }
+
+.font-headline-lg   { font-family: 'Space Grotesk', sans-serif; }
+.font-headline-md   { font-family: 'Space Grotesk', sans-serif; }
+.font-headline-sm   { font-family: 'Space Grotesk', sans-serif; }
+.font-display-xl    { font-family: 'Space Grotesk', sans-serif; }
+.font-body-lg       { font-family: 'Inter', sans-serif; }
+.font-body-md       { font-family: 'Inter', sans-serif; }
+.font-body-sm       { font-family: 'Inter', sans-serif; }
+.font-label-lg      { font-family: 'JetBrains Mono', monospace; }
+.font-label-md      { font-family: 'JetBrains Mono', monospace; }
+.font-label-sm      { font-family: 'JetBrains Mono', monospace; }
+
+/* ─── Spacing utility ─────────────────────────────────────────────────────────── */
+.px-margin { padding-left: 1rem; padding-right: 1rem; }

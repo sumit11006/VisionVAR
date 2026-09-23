@@ -1,0 +1,91 @@
+import type { MatchEvent } from '@/types';
+
+export const mockEvents: MatchEvent[] = [
+  {
+    id: 'EVT-001', minute: 12, second: 0, frameId: 21600, timecode: '00:12:00.000',
+    type: 'GOAL', team: 'MCI', player: 'Erling Haaland', playerJersey: 9,
+    playerTeam: 'Manchester City / NOR', description: 'Clinical finish from Haaland after a through-ball from De Bruyne; right foot placement into far post.',
+    aiVerdict: 'VALIDATED', xg: 0.72, ballVelocityKph: 112.4, impactGForce: 18.6,
+    aiExplanation: 'Kick-point confirmed at Frame #21,600. Multi-camera reconstruction validates onside position. Ball in play: verified.',
+  },
+  {
+    id: 'EVT-002', minute: 17, second: 0, frameId: 30600, timecode: '00:17:00.000',
+    type: 'YELLOW_CARD', team: 'RMA', player: 'Eduardo Camavinga', playerJersey: 12,
+    playerTeam: 'Real Madrid / FRA', description: 'Late challenge on Rodri near the center circle.',
+    aiVerdict: null, xg: null,
+  },
+  {
+    id: 'EVT-003', minute: 22, second: 0, frameId: 39600, timecode: '00:22:00.000',
+    type: 'GOAL', team: 'RMA', player: 'Vinícius Jr.', playerJersey: 7,
+    playerTeam: 'Real Madrid / BRA', description: 'Vinícius capitalizes on a defensive error; left-foot low drive across goal.',
+    aiVerdict: 'VALIDATED', xg: 0.68, ballVelocityKph: 98.7, impactGForce: 16.2,
+    aiExplanation: 'Ball trajectory confirmed at Frame #39,600. Onside verified. No foul in build-up.',
+  },
+  {
+    id: 'EVT-004', minute: 28, second: 0, frameId: 50400, timecode: '00:28:00.000',
+    type: 'YELLOW_CARD', team: 'MCI', player: 'Rodri', playerJersey: 16,
+    playerTeam: 'Manchester City / ESP', description: 'Deliberate handball to stop a counter-attack.',
+    aiVerdict: null, xg: null,
+  },
+  {
+    id: 'EVT-005', minute: 34, second: 18, frameId: 61740, timecode: '00:34:18.000',
+    type: 'PENALTY_RESCINDED', team: 'MCI', player: 'Erling Haaland', playerJersey: 9,
+    playerTeam: 'Manchester City / NOR', description: 'Initial penalty award overturned after VAR review — contact was minimal, outside penalty box.',
+    aiVerdict: 'AI EVENT: CONTACT DETECTED (MINIMAL)', xg: null,
+    aiExplanation: 'Contact force below threshold. Incident occurred 2.4cm outside penalty area by reprojection.',
+  },
+  {
+    id: 'EVT-006', minute: 39, second: 0, frameId: 70200, timecode: '00:39:00.000',
+    type: 'YELLOW_CARD', team: 'RMA', player: 'Luka Modrić', playerJersey: 10,
+    playerTeam: 'Real Madrid / CRO', description: 'Simulation after drawing a free-kick near the edge of the box.',
+    aiVerdict: null, xg: null,
+  },
+  {
+    id: 'EVT-007', minute: 44, second: 0, frameId: 79200, timecode: '00:44:00.000',
+    type: 'OFFSIDE', team: 'MCI', player: null, playerJersey: undefined,
+    description: 'Marginal offside flag confirmed against Manchester City attacker.',
+    aiVerdict: 'FLAG CONFIRMED', xg: null, saotMarginCm: 4.2,
+    aiExplanation: 'SAOT triangulation confirms offside by 4.2cm. Uncertainty: ±0.8cm.',
+  },
+  {
+    id: 'EVT-008', minute: 46, second: 0, frameId: 82800, timecode: '00:46:00.000',
+    type: 'SUBSTITUTION', team: 'RMA', player: 'Substitution', playerJersey: undefined,
+    description: 'Halftime tactical substitution by Real Madrid.',
+    aiVerdict: null, xg: null,
+  },
+  {
+    id: 'EVT-009', minute: 53, second: 2, frameId: 95450, timecode: '00:53:02.000',
+    type: 'GOAL', team: 'MCI', player: 'Kevin De Bruyne', playerJersey: 17,
+    playerTeam: 'Manchester City / BEL', description: 'Low-probability long-range strike from De Bruyne deflects off a defender into the net.',
+    aiVerdict: 'VALIDATED', xg: 0.08, ballVelocityKph: 127.3, impactGForce: 22.1,
+    aiExplanation: 'Deflection confirmed by ball trajectory model. Original xG: 0.08 (pre-deflection path).',
+  },
+  {
+    id: 'EVT-010', minute: 58, second: 0, frameId: 104400, timecode: '00:58:00.000',
+    type: 'OFFSIDE', team: 'MCI', player: null,
+    description: 'Offside tested via SAOT — attacker cleared.',
+    aiVerdict: 'SAOT TESTED — ONSIDE CONFIRMED', xg: null, saotMarginCm: -2.8,
+    aiExplanation: 'Attacker onside by 2.8cm margin. Uncertainty: ±1.1cm. Flag not raised.',
+  },
+  {
+    id: 'EVT-011', minute: 61, second: 0, frameId: 109800, timecode: '01:01:00.000',
+    type: 'SUBSTITUTION', team: 'MCI', player: 'Jack Grealish', playerJersey: 10,
+    playerTeam: 'Manchester City / ENG', description: 'Jack Grealish enters. Tactical width addition in final third.',
+    aiVerdict: null, xg: null,
+  },
+  {
+    id: 'EVT-012', minute: 66, second: 10, frameId: 119104, timecode: '01:06:10.120',
+    type: 'HIGH_DANGER_FOUL', team: 'TOT', player: 'Eric Dier', playerJersey: 15,
+    playerTeam: 'Tottenham Hotspur / ENG', description: 'Late scissor challenge near penalty arc box; studs down, studs-to-turf contact verified on high-speed rail camera.',
+    aiVerdict: 'CARD INCIDENT [CONF: 0.91]', xg: null,
+    aiExplanation: 'Contact force: 14.2 G-Force. Impact velocity: 31.4 km/h. Studs-up confirmed. Recommend disciplinary review.',
+  },
+  {
+    id: 'EVT-013', minute: 67, second: 24, frameId: 121418, timecode: '01:07:24.480',
+    type: 'GOAL_UNDER_REVIEW', team: 'MCI', player: 'Mason Mount', playerJersey: 19,
+    playerTeam: 'Chelsea FC / ENG', description: 'Slide connection after deflected cross; right boot toe coordinate locked against Eric Dier (#15) trailing knee.',
+    aiVerdict: 'UNDER REVIEW (SAOT)', xg: 0.74, ballVelocityKph: 108.4, impactGForce: 14.2, saotMarginCm: 3.8,
+    aiExplanation: 'Automated kick-point synced at Frame #121,418. Multi-camera homography estimates attacker toe inside defender knee line by +3.8cm (Uncertainty ±0.9cm). Ball visibility: 98%.',
+    isActive: true,
+  },
+];
