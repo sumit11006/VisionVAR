@@ -1,0 +1,65 @@
+interface PitchSVGRadarProps {
+  teamADots?: { cx: number; cy: number; active?: boolean }[];
+  teamBDots?: { cx: number; cy: number }[];
+  ballPos?: { cx: number; cy: number };
+  defensiveLine?: number;
+  height?: string;
+}
+
+const DEFAULT_TEAM_A = [
+  { cx: 20, cy: 80 }, { cx: 65, cy: 30 }, { cx: 60, cy: 65 },
+  { cx: 60, cy: 95 }, { cx: 65, cy: 130 }, { cx: 120, cy: 45 },
+  { cx: 115, cy: 80 }, { cx: 120, cy: 115 }, { cx: 190, cy: 35 },
+  { cx: 210, cy: 82, active: true }, { cx: 195, cy: 125 },
+];
+const DEFAULT_TEAM_B = [
+  { cx: 280, cy: 80 }, { cx: 235, cy: 35 }, { cx: 220, cy: 65 },
+  { cx: 220, cy: 95 }, { cx: 235, cy: 125 }, { cx: 170, cy: 50 },
+  { cx: 165, cy: 80 }, { cx: 170, cy: 110 }, { cx: 130, cy: 40 },
+  { cx: 110, cy: 80 }, { cx: 130, cy: 120 },
+];
+
+export default function PitchSVGRadar({
+  teamADots = DEFAULT_TEAM_A,
+  teamBDots = DEFAULT_TEAM_B,
+  ballPos = { cx: 218, cy: 84 },
+  defensiveLine = 195,
+  height = 'h-36',
+}: PitchSVGRadarProps) {
+  return (
+    <div
+      className={`relative w-full ${height} rounded overflow-hidden flex items-center justify-center`}
+      style={{ background: '#0a0e14', border: '1px solid rgba(59,75,61,0.4)' }}
+    >
+      <svg className="w-full h-full p-2" viewBox="0 0 300 160">
+        {/* Boundary */}
+        <rect x="2" y="2" width="296" height="156" fill="none" stroke="#3b4b3d" strokeWidth="1.2" />
+        {/* Halfway */}
+        <line x1="150" y1="2" x2="150" y2="158" stroke="#3b4b3d" strokeWidth="1.2" />
+        {/* Center circle */}
+        <circle cx="150" cy="80" r="28" fill="none" stroke="#3b4b3d" strokeWidth="1.2" />
+        <circle cx="150" cy="80" r="2" fill="#3b4b3d" />
+        {/* Left penalty area */}
+        <rect x="2" y="32" width="48" height="96" fill="none" stroke="#3b4b3d" strokeWidth="1.2" />
+        {/* Right penalty area */}
+        <rect x="250" y="32" width="48" height="96" fill="none" stroke="#3b4b3d" strokeWidth="1.2" />
+        {/* Defensive line */}
+        <line x1={defensiveLine} y1="4" x2={defensiveLine} y2="156" stroke="#ffb4ab" strokeDasharray="3 3" strokeWidth="1.5" />
+        {/* Team A (cyan) */}
+        {teamADots.map((d, i) => (
+          d.active ? (
+            <circle key={i} cx={d.cx} cy={d.cy} r="4.5" fill="#00daf3" stroke="#ffffff" strokeWidth="1.2" className="animate-pulse" />
+          ) : (
+            <circle key={i} cx={d.cx} cy={d.cy} r="3.5" fill="#00daf3" />
+          )
+        ))}
+        {/* Team B (emerald) */}
+        {teamBDots.map((d, i) => (
+          <circle key={i} cx={d.cx} cy={d.cy} r="3.5" fill="#00e479" />
+        ))}
+        {/* Ball */}
+        <circle cx={ballPos.cx} cy={ballPos.cy} r="3" fill="#ffffff" className="glow-cyan" />
+      </svg>
+    </div>
+  );
+}

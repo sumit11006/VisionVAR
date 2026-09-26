@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VisionVAR — Neural Pitch Intelligence System</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#181c22",
+            "on-tertiary-fixed": "#07006c",
+            "inverse-primary": "#006d37",
+            "secondary-fixed-dim": "#00daf3",
+            "tertiary-fixed": "#e1e0ff",
+            "secondary": "#bdf4ff",
+            "on-error": "#690005",
+            "inverse-surface": "#dfe2eb",
+            "inverse-on-surface": "#2d3137",
+            "primary-container": "#00ff88",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "surface": "#10141a",
+            "surface-container-lowest": "#0a0e14",
+            "outline": "#849585",
+            "tertiary": "#fdf9ff",
+            "surface-container": "#1c2026",
+            "on-error-container": "#ffdad6",
+            "on-surface-variant": "#b9cbb9",
+            "outline-variant": "#3b4b3d",
+            "on-primary-container": "#007139",
+            "secondary-container": "#00e3fd",
+            "on-primary-fixed": "#00210c",
+            "tertiary-fixed-dim": "#c0c1ff",
+            "primary-fixed-dim": "#00e479",
+            "surface-bright": "#353940",
+            "surface-container-high": "#262a31",
+            "surface-dim": "#10141a",
+            "tertiary-container": "#dcdbff",
+            "background": "#10141a",
+            "on-background": "#dfe2eb",
+            "on-secondary": "#00363d",
+            "on-primary": "#003919",
+            "on-secondary-fixed-variant": "#004f58",
+            "on-secondary-fixed": "#001f24",
+            "on-primary-fixed-variant": "#005228",
+            "on-tertiary-container": "#4c4eda",
+            "on-tertiary-fixed-variant": "#2f2ebe",
+            "surface-container-highest": "#31353c",
+            "on-tertiary": "#1000a9",
+            "primary-fixed": "#60ff99",
+            "secondary-fixed": "#9cf0ff",
+            "primary": "#f1ffef",
+            "on-surface": "#dfe2eb",
+            "on-secondary-container": "#00616d",
+            "surface-tint": "#00e479",
+            "surface-variant": "#31353c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.5rem",
+            "margin": "1rem",
+            "gutter": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-md": ["JetBrains Mono"],
+            "label-lg": ["JetBrains Mono"],
+            "display-xl": ["Space Grotesk"],
+            "label-sm": ["JetBrains Mono"],
+            "headline-lg-mobile": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "headline-md": ["Space Grotesk"],
+            "display-xl-mobile": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-sm": ["Space Grotesk"]
+          },
+          "fontSize": {
+            "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "display-xl": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "label-sm": ["9px", { "lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-xl-mobile": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.0em", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "22px", "letterSpacing": "0.0em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .hud-grid-pattern {
+      background-image: linear-gradient(to right, rgba(59, 75, 61, 0.15) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(59, 75, 61, 0.15) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .laser-glow-emerald {
+      box-shadow: 0 0 16px rgba(0, 255, 136, 0.25);
+    }
+    .laser-glow-cyan {
+      box-shadow: 0 0 16px rgba(0, 218, 243, 0.25);
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md antialiased min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-surface-container-lowest">
+<!-- HUD Top Bar from Shared Components JSON -->
+<header class="bg-surface-container-low/80 dark:bg-surface-container-low/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm backdrop-blur-xl flex justify-between items-center w-full px-margin h-14 z-50 sticky top-0">
+<!-- Brand Identity & Optical Indicator -->
+<div class="flex items-center gap-6">
+<div class="text-headline-sm font-headline-lg font-bold tracking-tight text-primary-fixed-dim dark:text-primary-fixed-dim flex items-center gap-2">
+<span class="inline-flex items-center justify-center w-7 h-7 rounded bg-surface-container border border-primary-fixed-dim/40 text-primary-fixed-dim shadow-[0_0_10px_rgba(0,255,136,0.3)]">
+<span class="material-symbols-outlined text-[18px]" data-icon="videocam">videocam</span>
+</span>
+<span>VisionVAR</span>
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim px-1.5 py-0.5 rounded bg-surface-container-high border border-outline-variant/50 ml-1">NEURAL HUD 4.2</span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-6 pl-4 border-l border-outline-variant/40">
+<!-- Active Tab: Live Workspace (Intent Lock) -->
+<a class="border-b-2 border-primary-fixed-dim text-primary-fixed-dim font-label-md pb-1 flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[15px]" data-icon="grid_view">grid_view</span>
+          Live Workspace
+        </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150" href="#">
+          Offside Review
+        </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150" href="#">
+          Formation &amp; Radar
+        </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150" href="#">
+          Event Timeline
+        </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150" href="#">
+          Player Analytics
+        </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150" href="#">
+          Match Summary
+        </a>
+</nav>
+</div>
+<!-- Trailing Actions Cluster -->
+<div class="flex items-center gap-3">
+<!-- Live Pulse Telemetry -->
+<div class="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-surface-container border border-outline-variant/50 rounded text-label-sm font-label-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim animate-pulse-subtle"></span>
+<span>SYNCHRONIZED: 120 FPS</span>
+</div>
+<!-- Icon Actions -->
+<div class="flex items-center gap-1 text-on-surface-variant">
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="videocam">videocam</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="fullscreen">fullscreen</span>
+</button>
+</div>
+<!-- Secondary Action -->
+<button class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-label-md font-label-md bg-surface-container border border-outline-variant/60 text-secondary-fixed-dim hover:bg-surface-container-high hover:text-primary-fixed-dim transition-all active:scale-95">
+<span class="material-symbols-outlined text-[15px]" data-icon="download">download</span>
+        Export Telemetry
+      </button>
+<!-- Primary Action -->
+<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded text-label-md font-label-md bg-primary-container text-surface-container-lowest font-semibold hover:bg-primary-fixed hover:shadow-[0_0_16px_rgba(0,255,136,0.35)] transition-all active:scale-95">
+<span class="material-symbols-outlined text-[16px]" data-icon="cell_tower">cell_tower</span>
+        Broadcast Stream
+      </button>
+<!-- Avatar -->
+<div class="w-8 h-8 rounded border border-primary-fixed-dim/40 overflow-hidden bg-surface-container-high flex items-center justify-center ml-1">
+<img alt="Chief VAR Match Official Avatar" class="w-full h-full object-cover" data-alt="Close up portrait photograph of an elite Chief VAR Match Official wearing technical communications headset and dark clinical referee uniform inside a dimly lit modern sports operations center with green laser telemetry reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNcOI0bMmgCNP6cIWu5wdIB1MYxzDJkyxoh2FQDPirL_gcXRM3QQRiEdYMdB2fJpjf8qBm2im5Vx-dLkrAN7YXwu06rgZk5Wa1V6c0Q7LPatuaTMCncbsPVGRR8u06GOENrQfsVXGqlONHQxe5jFSpopreODND_RjceSGGajxu_bmLLkrw9gPtT1Fxj0hs1izF7Q14YFMg_bXAf-o0iViEWHsYNZQ6L-pkp-Xh93CkJnvhTdMTf3aQ"/>
+</div>
+</div>
+</header>
+<!-- Ambient Cockpit Grid & Glowing Halo -->
+<div class="hud-grid-pattern fixed inset-0 pointer-events-none opacity-20 z-0"></div>
+<div class="fixed top-20 right-1/4 w-96 h-96 bg-primary-fixed-dim/5 rounded-full blur-3xl pointer-events-none z-0"></div>
+<div class="fixed bottom-10 left-1/4 w-80 h-80 bg-secondary-fixed-dim/5 rounded-full blur-3xl pointer-events-none z-0"></div>
+<!-- Main Cockpit Workspace -->
+<main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+<!-- Hero Section: Clinical Mission Control Header -->
+<section class="border border-outline-variant/40 rounded-xl bg-surface-container/60 backdrop-blur-xl p-6 lg:p-8 relative overflow-hidden">
+<!-- Watermark Background Optical Wireframe -->
+<div class="absolute -right-12 -top-16 w-96 h-96 opacity-10 pointer-events-none">
+<div class="w-full h-full border border-primary-fixed-dim rounded-full flex items-center justify-center">
+<div class="w-2/3 h-2/3 border border-secondary-fixed-dim rounded-full flex items-center justify-center">
+<div class="w-1/3 h-1/3 border border-primary-fixed-dim rotate-45"></div>
+</div>
+</div>
+</div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<div class="max-w-2xl">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container-highest/80 border border-outline-variant/60 text-secondary-fixed-dim text-label-sm font-label-sm mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim animate-ping"></span>
+            SUB-MILLIMETER CALIBRATION ENGINE READY
+          </div>
+<h1 class="text-headline-lg font-headline-lg text-primary tracking-tight">
+            VisionVAR Neural Pitch Intelligence
+          </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant mt-2 max-w-xl">
+            Next-generation AI football video analysis &amp; automated VAR system. Real-time multi-camera synchronicity, skeletal limb keypoint tracking, and homography 3D pitch spatial reconstruction.
+          </p>
+</div>
+<!-- Telemetry Status Cockpit Strip -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-surface-container-lowest/80 border border-outline-variant/40 p-3 rounded-lg">
+<div class="border-r border-outline-variant/30 pr-3">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">TOTAL FRAMES</span>
+<span class="text-label-lg font-label-lg text-primary font-bold">162,000</span>
+<span class="text-[10px] text-primary-fixed-dim font-label-sm block">4K 60FPS SYNCD</span>
+</div>
+<div class="border-r border-outline-variant/30 pr-3">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">INFERENCE</span>
+<span class="text-label-lg font-label-lg text-primary-fixed-dim font-bold">14.2ms</span>
+<span class="text-[10px] text-on-surface-variant font-label-sm block">ZERO LAG</span>
+</div>
+<div class="border-r border-outline-variant/30 pr-3">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">GPU CLUSTER</span>
+<span class="text-label-lg font-label-lg text-secondary-fixed-dim font-bold">74%</span>
+<span class="text-[10px] text-on-surface-variant font-label-sm block">8x H100 NODES</span>
+</div>
+<div>
+<span class="text-label-sm font-label-sm text-on-surface-variant block">OPTICAL CALIB</span>
+<span class="text-label-lg font-label-lg text-primary font-bold">±0.08mm</span>
+<span class="text-[10px] text-primary-fixed-dim font-label-sm block">FIFA GRADE A</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Two Primary Upload / Video Ingestion Actions -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Action 1: File Batch Ingestion -->
+<div class="group relative border border-outline-variant/50 hover:border-primary-fixed-dim/60 bg-surface-container/50 hover:bg-surface-container-high/40 rounded-xl p-5 transition-all duration-200 cursor-pointer overflow-hidden">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest border border-outline-variant/60 flex items-center justify-center text-primary-fixed-dim group-hover:scale-105 group-hover:border-primary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-[24px]" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<div>
+<div class="text-headline-sm font-headline-sm text-primary group-hover:text-primary-fixed-dim transition-colors">
+                Upload Match Video
+              </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                MP4, MKV, ProRes up to 8K 60FPS broadcast containers
+              </p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container-lowest border border-outline-variant/60 text-secondary-fixed-dim">
+            LOCAL / S3
+          </span>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="tune">tune</span>
+<span>Batch Multi-Angle Auto-Stitching Supported</span>
+</div>
+<span class="text-label-sm font-label-sm text-primary-fixed-dim font-semibold group-hover:translate-x-0.5 transition-transform flex items-center">
+            Select Files →
+          </span>
+</div>
+</div>
+<!-- Action 2: Live Optical Feed Connection -->
+<div class="group relative border border-outline-variant/50 hover:border-secondary-fixed-dim/60 bg-surface-container/50 hover:bg-surface-container-high/40 rounded-xl p-5 transition-all duration-200 cursor-pointer overflow-hidden">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest border border-outline-variant/60 flex items-center justify-center text-secondary-fixed-dim group-hover:scale-105 group-hover:border-secondary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-[24px]" data-icon="sensors">sensors</span>
+</div>
+<div>
+<div class="text-headline-sm font-headline-sm text-primary group-hover:text-secondary-fixed-dim transition-colors">
+                Connect Live Optical Pitch Feed
+              </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                RTSP / SDI direct optical matrix with 12ms target latency
+              </p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-primary-container/20 border border-primary-fixed-dim/40 text-primary-fixed-dim flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+            BROADCAST LINK
+          </span>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="router">router</span>
+<span>IP: 192.168.10.88:554/live/var-feed-01</span>
+</div>
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim font-semibold group-hover:translate-x-0.5 transition-transform flex items-center">
+            Link Stream →
+          </span>
+</div>
+</div>
+</section>
+<!-- Interactive Multi-Stage AI Neural Processing Pipeline (Bento Presentation) -->
+<section class="border border-outline-variant/40 rounded-xl bg-surface-container/70 backdrop-blur-xl p-5 space-y-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-fixed-dim shadow-[0_0_8px_rgba(0,255,136,0.6)]"></span>
+<h2 class="text-headline-sm font-headline-sm text-primary">Neural Inference Pipeline Architecture</h2>
+<span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant/40">
+            PIPELINE ID: #VAR-ENG-9884
+          </span>
+</div>
+<div class="flex items-center gap-4 text-label-sm font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span> Complete</span>
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-secondary-fixed-dim animate-pulse"></span> Active (Stage 3)</span>
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-outline"></span> Pending</span>
+</div>
+</div>
+<!-- Pipeline Progress Track -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 pt-2">
+<!-- Stage 1: Ingestion & Frame Extraction (Complete 100%) -->
+<div class="p-3.5 rounded-lg bg-surface-container-lowest border border-primary-fixed-dim/40 relative overflow-hidden flex flex-col justify-between h-36">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">STAGE 01</span>
+<span class="text-label-sm font-label-sm text-primary-fixed-dim font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+              100%
+            </span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-primary font-semibold">Ingestion &amp; Extraction</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 text-[10px]">162,000 frames sliced</p>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-primary-fixed-dim h-full w-full"></div>
+</div>
+</div>
+<!-- Stage 2: DeepLab Player Detection (Complete 100%) -->
+<div class="p-3.5 rounded-lg bg-surface-container-lowest border border-primary-fixed-dim/40 relative overflow-hidden flex flex-col justify-between h-36">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">STAGE 02</span>
+<span class="text-label-sm font-label-sm text-primary-fixed-dim font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+              100%
+            </span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-primary font-semibold">DeepLab Player Detect</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 text-[10px]">22 centroids identified</p>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-primary-fixed-dim h-full w-full"></div>
+</div>
+</div>
+<!-- Stage 3: YOLOv9 Ball Tracking (Active 88%) -->
+<div class="p-3.5 rounded-lg bg-surface-container-lowest border-2 border-secondary-fixed-dim relative overflow-hidden flex flex-col justify-between h-36 shadow-[0_0_14px_rgba(0,218,243,0.15)]">
+<div class="absolute top-0 right-0 px-1.5 py-0.5 bg-secondary-fixed-dim text-surface-container-lowest text-[9px] font-label-sm font-bold tracking-wider">
+            ACTIVE
+          </div>
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim">STAGE 03</span>
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim font-bold mr-8">88%</span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-primary font-semibold flex items-center gap-1.5">
+              YOLOv9 Ball Tracking
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim animate-ping"></span>
+</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 text-[10px]">Velocity: 104.2 km/h</p>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-fixed-dim h-full w-[88%] transition-all duration-300"></div>
+</div>
+</div>
+<!-- Stage 4: Jersey & Team Optical Recognition (Pending) -->
+<div class="p-3.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30 opacity-60 flex flex-col justify-between h-36">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">STAGE 04</span>
+<span class="text-label-sm font-label-sm text-outline">PENDING</span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">Jersey Optical OCR</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 text-[10px]">Awaiting Ball Anchor</p>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-outline h-full w-0"></div>
+</div>
+</div>
+<!-- Stage 5: Homography 3D Pitch Mapping (Pending) -->
+<div class="p-3.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30 opacity-60 flex flex-col justify-between h-36">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">STAGE 05</span>
+<span class="text-label-sm font-label-sm text-outline">PENDING</span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">Homography 3D Mesh</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 text-[10px]">Pitch projective matrix</p>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-outline h-full w-0"></div>
+</div>
+</div>
+<!-- Stage 6: Synthetic VAR Offside & Event Engine (Pending) -->
+<div class="p-3.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30 opacity-60 flex flex-col justify-between h-36">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">STAGE 06</span>
+<span class="text-label-sm font-label-sm text-outline">PENDING</span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">Synthetic VAR Engine</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 text-[10px]">Offside line computation</p>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-outline h-full w-0"></div>
+</div>
+</div>
+</div>
+<!-- Live Stage Log Terminal Strip -->
+<div class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-label-sm font-label-sm">
+<div class="flex items-center gap-2 overflow-x-auto text-on-surface-variant">
+<span class="text-primary-fixed-dim">[14:28:09.124]</span>
+<span class="text-secondary-fixed-dim">YOLOv9-BALL-TRACK:</span>
+<span>Ball bounding tensor confidence 0.962 | 3D coordinate vector (x: 48.21, y: 18.04, z: 0.22)</span>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="text-on-surface-variant">SKELETAL CONF: <strong class="text-primary-fixed-dim">99.4%</strong></span>
+<button class="text-secondary-fixed-dim hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="terminal">terminal</span>
+            View Kernel Logs
+          </button>
+</div>
+</div>
+</section>
+<!-- Recent Match Analysis Sessions Cards Grid -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-headline-md font-headline-md text-primary">Recent Match Telemetry Sessions</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Active UEFA Champions League multi-angle VAR processing logs</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 rounded bg-surface-container border border-outline-variant/50 text-label-sm font-label-sm text-on-surface-variant hover:text-primary transition-colors">
+            Filter: All Matches
+          </button>
+<button class="px-3 py-1 rounded bg-surface-container border border-outline-variant/50 text-label-sm font-label-sm text-on-surface-variant hover:text-primary transition-colors">
+            Sort: Most Recent
+          </button>
+</div>
+</div>
+<!-- Match Cards Bento -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<!-- Card 1: Manchester City vs Real Madrid (Ready) -->
+<div class="border border-outline-variant/50 hover:border-primary-fixed-dim/60 bg-surface-container/60 rounded-xl overflow-hidden transition-all duration-200 group flex flex-col justify-between">
+<!-- Card Media Header with Cinematic Broadcast Preview -->
+<div class="relative h-48 bg-surface-container-lowest overflow-hidden">
+<img alt="Manchester City vs Real Madrid Match Analysis Feed" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Cinematic high contrast broadcast still of elite football action in UEFA Champions League semi-final under bright stadium floodlights with tactical HUD green optical vector overlays and digital ball tracking ring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhRjAo-y6T0dCAtHIoaY5J8Bl1K7XuJe2bwXniaZUv_I1bO_F_qjP7N0K6VMSiSr_NJUF5PymFXFiZnVY5eZKxv6XfULIKsBOL54ZQjVCA0c20ocjxo6hMVoAvqYT9GM9Z5838dLY5xgVHkOLrLIR6ZCc40tkkDTt8ydHsP56Dy-oTKG_MBVWJM4uPGAmOhIYeA22MeWb_whC4XEcnooFnXc6-_0an6Q23zY0bd4qins6GxVgJ46TR"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<!-- Floating Badge Overlay -->
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/60 text-label-sm font-label-sm text-primary flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim shadow-[0_0_6px_rgba(0,255,136,0.6)]"></span>
+                Status: Ready
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/60 text-label-sm font-label-sm text-secondary-fixed-dim">
+                UCL Semi-Final
+              </span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="px-2 py-0.5 rounded bg-error-container/80 text-on-error-container border border-error/30 text-label-sm font-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="warning">warning</span>
+                14 VAR ALERTS
+              </span>
+</div>
+<div class="absolute bottom-2 left-3 right-3 flex items-center justify-between text-label-sm font-label-sm text-on-surface">
+<span class="font-mono font-bold">2H · 67m 14s</span>
+<span class="text-primary-fixed-dim">100% TELEMETRY SYNC</span>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-4 space-y-3">
+<div>
+<div class="text-headline-sm font-headline-sm text-primary group-hover:text-primary-fixed-dim transition-colors">
+                Manchester City vs Real Madrid
+              </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                Etihad Stadium · 4-Camera Synchronized VAR feed with volumetric calibration
+              </p>
+</div>
+<!-- Mini Telemetry Pill Cluster -->
+<div class="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/30 text-label-sm font-label-sm">
+<div>
+<span class="text-on-surface-variant block text-[9px]">OFFSIDE CHECKS</span>
+<span class="text-primary font-bold">9 Reviews</span>
+</div>
+<div>
+<span class="text-on-surface-variant block text-[9px]">PENALTY RADAR</span>
+<span class="text-primary font-bold">3 Potential</span>
+</div>
+<div>
+<span class="text-on-surface-variant block text-[9px]">RED CARD EVAL</span>
+<span class="text-error font-bold">2 High Risk</span>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="pt-1 flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Archived 12m ago</span>
+<button class="px-3 py-1.5 rounded bg-primary-container text-surface-container-lowest font-semibold text-label-md font-label-md hover:bg-primary-fixed transition-colors flex items-center gap-1 active:scale-95">
+                Launch Workspace
+                <span class="material-symbols-outlined text-[14px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2: Bayern Munich vs Arsenal (Archived) -->
+<div class="border border-outline-variant/50 hover:border-outline bg-surface-container/60 rounded-xl overflow-hidden transition-all duration-200 group flex flex-col justify-between">
+<div class="relative h-48 bg-surface-container-lowest overflow-hidden">
+<img alt="Bayern Munich vs Arsenal Match Analysis Feed" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80" data-alt="Dramatic sports broadcast wide shot of football match between European teams at night in rain with ultra sharp digital camera angles and tactical pitch boundaries." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuV9NnilQkx1bmdY1_ecoRuh6sE3y_tKxL7N6qZatZaqQGIMo5oxy-RM0FXtZxtlUW8KMbbn3oaohSHoe4bPu5mL13UFIaWk2affpFDqt8fdrI0gF4xszDSRqUCQ-Fupijw9Hv7PDNaaPkIgnORmlGGYr1pq-GraDJQ3hzE6ok0ueDB_ag07fK3EDYagO3_ajFqbKP1UhcPhsWM99lVhS_koPCtZ1Xjje9BPmU3TDJK_P3bensAdb_"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/60 text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+                Status: Archived
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/60 text-label-sm font-label-sm text-on-surface-variant">
+                UCL Quarter-Final
+              </span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant border border-outline-variant/60 text-label-sm font-label-sm">
+                28 EVENTS LOGGED
+              </span>
+</div>
+<div class="absolute bottom-2 left-3 right-3 flex items-center justify-between text-label-sm font-label-sm text-on-surface">
+<span class="font-mono">Full Match · 90m + ET</span>
+<span class="text-on-surface-variant">COMPLETE REPORT</span>
+</div>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<div class="text-headline-sm font-headline-sm text-primary group-hover:text-secondary-fixed-dim transition-colors">
+                Bayern Munich vs Arsenal
+              </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                Allianz Arena · Full synthetic event trace &amp; referee decision logs
+              </p>
+</div>
+<div class="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/30 text-label-sm font-label-sm">
+<div>
+<span class="text-on-surface-variant block text-[9px]">OFFSIDE CHECKS</span>
+<span class="text-primary font-bold">16 Verified</span>
+</div>
+<div>
+<span class="text-on-surface-variant block text-[9px]">GOAL VERIFY</span>
+<span class="text-primary font-bold">4 Validated</span>
+</div>
+<div>
+<span class="text-on-surface-variant block text-[9px]">AVG OVERTURN</span>
+<span class="text-secondary-fixed-dim font-bold">22.4s</span>
+</div>
+</div>
+<div class="pt-1 flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Archived 2h ago</span>
+<button class="px-3 py-1.5 rounded bg-surface-container-high border border-outline-variant/60 text-on-surface hover:text-primary transition-colors text-label-md font-label-md flex items-center gap-1 active:scale-95">
+                Review Dossier
+                <span class="material-symbols-outlined text-[14px]" data-icon="article">article</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3: Inter vs Atletico (Processing 68%) -->
+<div class="border border-secondary-fixed-dim/60 bg-surface-container/60 rounded-xl overflow-hidden transition-all duration-200 group flex flex-col justify-between shadow-[0_0_16px_rgba(0,218,243,0.1)]">
+<div class="relative h-48 bg-surface-container-lowest overflow-hidden">
+<img alt="Inter vs Atletico Match Analysis Feed" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Dynamic football action in San Siro under dramatic lighting with players competing for possession while computerized holographic tracking grids illuminate the turf." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqVhW7mOX5VxIX1A0hsyOm4Go84s18LQGoMWu0_gQCYVgntDSGmriW27XteBbY9QidwIa38uOqK2MdT41PYJynGWCxD9qIq-JzHilfL2pCICULTxp6-E9xpccTBKsRjbKeVZbXSwW2YgxNvAepyFqsAUSpcIZIBclITivU_T4zPUCo2wNCATASBtzjvz0d77LpHYdcCf6xYMdFzaBL7deUzkda5pcmvRB1H7iArf9c82jriSlniIkT"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-md border border-secondary-fixed-dim/40 text-label-sm font-label-sm text-secondary-fixed-dim flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed-dim animate-ping"></span>
+                Processing: 68%
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/60 text-label-sm font-label-sm text-secondary-fixed-dim">
+                UCL R16
+              </span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/80 text-secondary-fixed-dim border border-secondary-fixed-dim/40 text-label-sm font-label-sm font-mono">
+                ETA: 04:18m
+              </span>
+</div>
+<div class="absolute bottom-2 left-3 right-3 flex items-center justify-between text-label-sm font-label-sm text-on-surface">
+<span class="font-mono font-bold">1H · 90m Ingestion</span>
+<span class="text-secondary-fixed-dim">INFERENCING SKELETAL</span>
+</div>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<div class="text-headline-sm font-headline-sm text-primary group-hover:text-secondary-fixed-dim transition-colors">
+                Inter vs Atletico
+              </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                San Siro · High-density tactical tracking with multi-angle homography
+              </p>
+</div>
+<!-- Ingestion Live Bar -->
+<div class="py-2 border-y border-outline-variant/30 space-y-1.5">
+<div class="flex justify-between text-label-sm font-label-sm">
+<span class="text-on-surface-variant">HOMOGRAPHY CALIBRATION</span>
+<span class="text-secondary-fixed-dim font-bold">68% COMPLETE</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary-fixed-dim h-full w-[68%] animate-pulse"></div>
+</div>
+</div>
+<div class="pt-1 flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Live GPU stream</span>
+<button class="px-3 py-1.5 rounded bg-surface-container border border-secondary-fixed-dim/50 text-secondary-fixed-dim hover:bg-secondary-fixed-dim hover:text-surface-container-lowest transition-colors text-label-md font-label-md flex items-center gap-1 active:scale-95">
+                Inspect Live Stream
+                <span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Tactical Radar & Operational Specs Cockpit Footer -->
+<section class="border-t border-outline-variant/40 pt-5 pb-8 flex flex-col md:flex-row items-center justify-between gap-4 text-label-sm font-label-sm text-on-surface-variant">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5 text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified_user">verified_user</span>
+          UEFA PROTOCOL COMPLIANT CERTIFIED
+        </span>
+<span class="hidden sm:inline-block text-outline">|</span>
+<span class="hidden sm:inline-block">HAWKEYE &amp; VOLUMETRIC MERGE: V8.19</span>
+<span class="hidden sm:inline-block text-outline">|</span>
+<span>LATENCY TARGET: &lt; 15ms</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-mono">SERVER COCKPIT: VAR-NODE-FRANKFURT-04</span>
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+</div>
+</section>
+</main>
+</body></html>

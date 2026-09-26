@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VisionVAR - Formation Analysis &amp; Tactical Radar</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#181c22",
+            "on-tertiary-fixed": "#07006c",
+            "inverse-primary": "#006d37",
+            "secondary-fixed-dim": "#00daf3",
+            "tertiary-fixed": "#e1e0ff",
+            "secondary": "#bdf4ff",
+            "on-error": "#690005",
+            "inverse-surface": "#dfe2eb",
+            "inverse-on-surface": "#2d3137",
+            "primary-container": "#00ff88",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "surface": "#10141a",
+            "surface-container-lowest": "#0a0e14",
+            "outline": "#849585",
+            "tertiary": "#fdf9ff",
+            "surface-container": "#1c2026",
+            "on-error-container": "#ffdad6",
+            "on-surface-variant": "#b9cbb9",
+            "outline-variant": "#3b4b3d",
+            "on-primary-container": "#007139",
+            "secondary-container": "#00e3fd",
+            "on-primary-fixed": "#00210c",
+            "tertiary-fixed-dim": "#c0c1ff",
+            "primary-fixed-dim": "#00e479",
+            "surface-bright": "#353940",
+            "surface-container-high": "#262a31",
+            "surface-dim": "#10141a",
+            "tertiary-container": "#dcdbff",
+            "background": "#10141a",
+            "on-background": "#dfe2eb",
+            "on-secondary": "#00363d",
+            "on-primary": "#003919",
+            "on-secondary-fixed-variant": "#004f58",
+            "on-secondary-fixed": "#001f24",
+            "on-primary-fixed-variant": "#005228",
+            "on-tertiary-container": "#4c4eda",
+            "on-tertiary-fixed-variant": "#2f2ebe",
+            "surface-container-highest": "#31353c",
+            "on-tertiary": "#1000a9",
+            "primary-fixed": "#60ff99",
+            "secondary-fixed": "#9cf0ff",
+            "primary": "#f1ffef",
+            "on-surface": "#dfe2eb",
+            "on-secondary-container": "#00616d",
+            "surface-tint": "#00e479",
+            "surface-variant": "#31353c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.5rem",
+            "margin": "1rem",
+            "gutter": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-md": ["JetBrains Mono"],
+            "label-lg": ["JetBrains Mono"],
+            "display-xl": ["Space Grotesk"],
+            "label-sm": ["JetBrains Mono"],
+            "headline-lg-mobile": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "headline-md": ["Space Grotesk"],
+            "display-xl-mobile": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-sm": ["Space Grotesk"]
+          },
+          "fontSize": {
+            "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "display-xl": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "label-sm": ["9px", { "lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-xl-mobile": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.0em", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "22px", "letterSpacing": "0.0em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .tactical-grid-bg {
+      background-image: linear-gradient(rgba(59, 75, 61, 0.18) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(59, 75, 61, 0.18) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .scanline {
+      background: linear-gradient(to bottom, rgba(0, 228, 121, 0), rgba(0, 228, 121, 0.05) 50%, rgba(0, 228, 121, 0));
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md min-h-screen overflow-x-hidden flex flex-col antialiased selection:bg-primary-container selection:text-surface-container-lowest">
+<!-- TOP NAV BAR (SHARED COMPONENT EXECUTION) -->
+<header class="flex justify-between items-center w-full px-margin h-14 z-50 sticky top-0 bg-surface-container-low/80 dark:bg-surface-container-low/80 backdrop-blur-md shadow-sm backdrop-blur-xl border-b border-outline-variant/30">
+<!-- Brand Logo -->
+<div class="flex items-center gap-6">
+<div class="text-headline-sm font-headline-lg font-bold tracking-tight text-primary-fixed-dim dark:text-primary-fixed-dim flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">radar</span>
+<span>VisionVAR</span>
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim bg-surface-container-high px-1.5 py-0.5 rounded border border-outline-variant/50 ml-1 tracking-widest">TACTICAL v4.2</span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-5 ml-4">
+<!-- Live Workspace -->
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-sm">dashboard</span>
+<span>Live Workspace</span>
+</a>
+<!-- Offside Review -->
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-sm">straighten</span>
+<span>Offside Review</span>
+</a>
+<!-- Formation & Radar (ACTIVE ITEM) -->
+<a class="border-b-2 border-primary-fixed-dim text-primary-fixed-dim font-label-md pb-1 flex items-center gap-1.5 active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">hub</span>
+<span>Formation &amp; Radar</span>
+</a>
+<!-- Event Timeline -->
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-sm">reorder</span>
+<span>Event Timeline</span>
+</a>
+<!-- Player Analytics -->
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-sm">monitoring</span>
+<span>Player Analytics</span>
+</a>
+<!-- Match Summary -->
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-sm">scoreboard</span>
+<span>Match Summary</span>
+</a>
+</nav>
+</div>
+<!-- Actions & Profile Cluster -->
+<div class="flex items-center gap-3">
+<!-- Live Sync status chip -->
+<div class="hidden lg:flex items-center gap-2 bg-surface-container px-2.5 py-1 rounded border border-outline-variant/40">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+<span class="text-label-sm font-label-sm text-primary-fixed-dim">SYNCED 1080p60 (2.4ms)</span>
+</div>
+<!-- Icon Actions -->
+<div class="flex items-center gap-1 border-r border-outline-variant/40 pr-2">
+<button class="p-1.5 rounded hover:bg-surface-container-high/60 text-on-surface-variant hover:text-primary-fixed-dim transition-all" title="Live Video Feeds">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-high/60 text-on-surface-variant hover:text-primary-fixed-dim transition-all" title="System Settings">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-high/60 text-on-surface-variant hover:text-primary-fixed-dim transition-all" title="Fullscreen Control Room">
+<span class="material-symbols-outlined">fullscreen</span>
+</button>
+</div>
+<!-- Secondary Trailing Action -->
+<button class="hidden sm:flex items-center gap-1 px-2.5 py-1 bg-surface-container border border-outline-variant/60 rounded text-label-md font-label-md text-secondary-fixed-dim hover:bg-surface-container-high/60 transition-all">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Export Telemetry</span>
+</button>
+<!-- Primary Trailing Action -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-container text-surface-container-lowest rounded text-label-md font-label-md font-semibold hover:brightness-110 active:scale-95 transition-all shadow-[0_0_12px_rgba(0,255,136,0.3)]">
+<span class="material-symbols-outlined text-sm font-bold">cast_connected</span>
+<span>Broadcast Stream</span>
+</button>
+<!-- Avatar -->
+<div class="w-8 h-8 rounded-full border border-primary-fixed-dim/60 overflow-hidden bg-surface-container-high flex items-center justify-center ml-1" title="Chief VAR Match Official Avatar">
+<img class="w-full h-full object-cover" data-alt="Close up professional portrait of an elite UEFA certified Chief Video Assistant Referee wearing a black headset with microphone against a dark high-tech control room environment illuminated by deep blue and emerald HUD monitor glows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbqF6QS0FwCXa6hQCFC316kToD7Xgk8kRmiwSipZ_tsFh6J80b2Y6KTPX8PzvUJOpiF9q8VJUxaKPVla0ep5CNbgXQJmiq-UPcRJv9AI4lYOeLax8_32c34mW_XcJLTVCyFXhwR4CbufiH0Il17L7O_RoK6FcwWNeNnVyVkK7QNd2IaNazp2JnogpYPIvpF5OgEypL_JUnzmVTKCqTvvxY88FkdJPxnqUzEYJemczPgAsjSVYXV6MJ"/>
+</div>
+</div>
+</header>
+<!-- MATCH SUB-HEADER FLOATING HUD PILL -->
+<div class="px-margin pt-2 pb-1 flex flex-wrap items-center justify-between gap-3 bg-surface-container-low/40 border-b border-outline-variant/20 text-label-md font-label-md">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high border border-outline-variant/40 text-secondary-fixed-dim text-label-sm font-label-sm">UCL MD-05</span>
+<span class="text-on-surface font-headline-sm text-sm tracking-wide">CHELSEA FC <span class="text-on-surface-variant text-xs">1 - 1</span> TOTTENHAM</span>
+</div>
+<div class="flex items-center gap-1.5 text-primary-fixed-dim">
+<span class="material-symbols-outlined text-sm">timer</span>
+<span class="font-bold text-label-lg font-label-lg">63:24.18</span>
+<span class="text-label-sm font-label-sm px-1 rounded bg-primary-container/20 text-primary-fixed-dim">2H</span>
+</div>
+</div>
+<!-- Active State Pill Indicators -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-xs text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-secondary-container inline-block"></span>
+<span class="text-label-sm font-label-sm">CHELSEA [BLUE]: POSS 58.2%</span>
+</div>
+<div class="flex items-center gap-1 text-xs text-on-surface-variant border-l border-outline-variant/30 pl-3">
+<span class="w-2 h-2 rounded-full bg-surface-bright border border-secondary-fixed inline-block"></span>
+<span class="text-label-sm font-label-sm">SPURS [WHITE]: POSS 41.8%</span>
+</div>
+<div class="flex items-center gap-1 text-xs text-primary-fixed-dim border-l border-outline-variant/30 pl-3">
+<span class="material-symbols-outlined text-sm">speed</span>
+<span class="text-label-sm font-label-sm">BALL V: 24.6 m/s</span>
+</div>
+</div>
+</div>
+<!-- MAIN OPERATIONAL WORKSPACE (SPLIT 55% / 45%) -->
+<main class="flex-1 flex flex-col xl:flex-row w-full p-2 gap-2 overflow-hidden">
+<!-- LEFT SIDE: 55% LIVE BROADCAST TACTICAL ANGLE FEED & CONVEX HULLS -->
+<section class="xl:w-[55%] flex flex-col gap-2 bg-surface-container-lowest rounded border border-outline-variant/30 overflow-hidden relative">
+<!-- Video Frame Container -->
+<div class="relative w-full aspect-[16/9] bg-surface-container-low overflow-hidden rounded group">
+<!-- Live Tactical Camera Feed Frame -->
+<img class="w-full h-full object-cover" data-alt="High tactical broadcast camera shot of a Champions League football match between Chelsea in royal blue kits and Tottenham in white kits. The green grass pitch features sharp yard markers, floodlight shadows, dynamic player movement, and stadium atmosphere under night lights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDtaT31hWJbJH38K5C_6oWvh0ukavfLSkfxesBpE5iTG364bH57BOBRu8Z0lUeEMuZb_sZbV6hoRWr_wNeA0lI-5PScsxDqFt-LVIozIxfsgztaU5OUGX0EXW0OUXp76c0QXuWz2xqbpSHJKVyhYHNjgv2DaIhbV__Dpy4BcbZVB5AKP9539aSzH1Cff8aIz6dD9viDy_SGNq6BSObZwsg8a5d0S1_ksZPbm3iAmSLQwEbUSzSVB0q"/>
+<!-- Telemetry & Convex Hull SVG Overlay Layer -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveaspectratio="none" viewbox="0 0 1000 562.5">
+<defs>
+<!-- Blue Team Convex Hull Gradient -->
+<radialgradient cx="50%" cy="50%" id="blueHullGlow" r="50%">
+<stop offset="0%" stop-color="#00daf3" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#00616d" stop-opacity="0.08"></stop>
+</radialgradient>
+<!-- White/Cyan Team Convex Hull Gradient -->
+<radialgradient cx="50%" cy="50%" id="whiteHullGlow" r="50%">
+<stop offset="0%" stop-color="#dfe2eb" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#9cf0ff" stop-opacity="0.04"></stop>
+</radialgradient>
+<filter height="140%" id="laserGlow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
+<femerge>
+<femergenode in="blur"></femergenode>
+<femergenode in="SourceGraphic"></femergenode>
+</femerge>
+</filter>
+</defs>
+<!-- Chelsea (Team A) Tactical Convex Hull -->
+<polygon fill="url(#blueHullGlow)" filter="url(#laserGlow)" points="320,180 540,160 620,290 510,430 310,380 260,260" stroke="#00daf3" stroke-dasharray="4 2" stroke-width="1.8"></polygon>
+<!-- Spurs (Team B) Compact Low Block Convex Hull -->
+<polygon fill="url(#whiteHullGlow)" points="560,190 780,210 840,360 740,460 590,400" stroke="#60ff99" stroke-dasharray="3 3" stroke-opacity="0.9" stroke-width="1.5"></polygon>
+<!-- Inter-unit tactical passing vector lines -->
+<line stroke="#00ff88" stroke-opacity="0.8" stroke-width="1.5" x1="420" x2="520" y1="280" y2="340"></line>
+<line stroke="#00ff88" stroke-dasharray="5 3" stroke-opacity="0.8" stroke-width="1.5" x1="520" x2="610" y1="340" y2="280"></line>
+<!-- Centroid Anchors with Coordinates -->
+<circle cx="426" cy="283" fill="#00daf3" r="5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="682" cy="305" fill="#60ff99" r="5" stroke="#ffffff" stroke-width="1.5"></circle>
+</svg>
+<!-- Live Feed Tactical HUD Overlays -->
+<div class="absolute top-3 left-3 flex flex-col gap-1 pointer-events-none">
+<div class="flex items-center gap-2 bg-surface-container-lowest/80 backdrop-blur-md px-2.5 py-1 rounded border border-outline-variant/60">
+<span class="material-symbols-outlined text-xs text-primary-fixed-dim animate-spin">videocam</span>
+<span class="text-label-sm font-label-sm text-on-surface">CAM 04 : HIGH TACTICAL SPIDER (1080p HDR)</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest/80 backdrop-blur-md px-2 py-0.5 rounded border border-outline-variant/40 w-fit">
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim">SKELETAL TRACK CONF: 99.1%</span>
+</div>
+</div>
+<!-- Team Spatial Centroids Tags Overlaid -->
+<div class="absolute top-3 right-3 flex flex-col gap-1 pointer-events-none items-end">
+<div class="bg-surface-container-lowest/85 backdrop-blur-md px-2 py-1 rounded border border-secondary-fixed-dim/40 text-right">
+<div class="text-label-sm font-label-sm text-secondary-fixed-dim flex items-center gap-1 justify-end">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim"></span> CHELSEA ATTACK HULL
+            </div>
+<div class="text-label-sm font-label-sm text-on-surface-variant">AREA: 482m² | COMPACTNESS: 74%</div>
+</div>
+<div class="bg-surface-container-lowest/85 backdrop-blur-md px-2 py-1 rounded border border-primary-fixed-dim/40 text-right">
+<div class="text-label-sm font-label-sm text-primary-fixed-dim flex items-center gap-1 justify-end">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim"></span> SPURS DEF BLOCK HULL
+            </div>
+<div class="text-label-sm font-label-sm text-on-surface-variant">DEF LINE: 28.5m | SPREAD: 31.8m</div>
+</div>
+</div>
+<!-- Floating Player Tags on Pitch (Sample Live Tracking Annotations) -->
+<div class="absolute top-[48%] left-[41%] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+<div class="flex flex-col items-center">
+<span class="px-1.5 py-0.5 bg-surface-container-lowest/90 border border-secondary-fixed-dim text-secondary-fixed-dim font-label-sm text-[9px] rounded whitespace-nowrap shadow-sm">#19 MOUNT (8.2 km/h)</span>
+<div class="w-2 h-2 rounded-full bg-secondary-fixed-dim ring-2 ring-surface-container-lowest"></div>
+</div>
+</div>
+<div class="absolute top-[45%] left-[54%] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+<div class="flex flex-col items-center">
+<span class="px-1.5 py-0.5 bg-surface-container-lowest/90 border border-primary-fixed text-primary-fixed font-label-sm text-[9px] rounded whitespace-nowrap shadow-sm">#15 DIER (DEF ANCHOR)</span>
+<div class="w-2 h-2 rounded-full bg-primary-fixed ring-2 ring-surface-container-lowest"></div>
+</div>
+</div>
+<!-- Tactical Video Feed Mini Controls -->
+<div class="absolute bottom-2 left-2 right-2 flex items-center justify-between px-3 py-1.5 bg-surface-container-lowest/90 backdrop-blur-md rounded border border-outline-variant/40">
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:text-primary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-sm">pause</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-sm">replay_10</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-sm">forward_10</span>
+</button>
+<div class="h-3 w-px bg-outline-variant/40 mx-1"></div>
+<span class="text-label-sm font-label-sm text-primary-fixed-dim">FRAME: 184,920 @ 60fps</span>
+</div>
+<div class="flex items-center gap-2 text-label-sm font-label-sm">
+<label class="flex items-center gap-1 cursor-pointer text-on-surface-variant hover:text-on-surface">
+<input checked="" class="rounded bg-surface-container border-outline text-primary-container focus:ring-0 w-3 h-3" type="checkbox"/>
+<span>Hulls</span>
+</label>
+<label class="flex items-center gap-1 cursor-pointer text-on-surface-variant hover:text-on-surface">
+<input checked="" class="rounded bg-surface-container border-outline text-primary-container focus:ring-0 w-3 h-3" type="checkbox"/>
+<span>Vectors</span>
+</label>
+<label class="flex items-center gap-1 cursor-pointer text-on-surface-variant hover:text-on-surface">
+<input class="rounded bg-surface-container border-outline text-primary-container focus:ring-0 w-3 h-3" type="checkbox"/>
+<span>Speed Spikes</span>
+</label>
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-secondary-fixed-dim hover:bg-surface-bright border border-outline-variant/40 ml-1">
+              Loupe 4x
+            </button>
+</div>
+</div>
+</div>
+<!-- Quick Metrics & Tactical Formation Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-2 pt-0">
+<!-- Team A Formation Card -->
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed-dim"></span>
+<span class="font-headline-sm text-xs text-on-surface">CHELSEA FC</span>
+</div>
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant/40">4-3-3 ATTACKING SHAPE</span>
+</div>
+<div class="grid grid-cols-3 gap-1.5 text-center mt-1">
+<div class="p-1 rounded bg-surface-container border border-outline-variant/20">
+<div class="text-label-sm font-label-sm text-on-surface-variant">WIDTH</div>
+<div class="text-label-md font-label-md font-semibold text-secondary-fixed-dim">52.4 m</div>
+</div>
+<div class="p-1 rounded bg-surface-container border border-outline-variant/20">
+<div class="text-label-sm font-label-sm text-on-surface-variant">DEPTH</div>
+<div class="text-label-md font-label-md font-semibold text-on-surface">31.8 m</div>
+</div>
+<div class="p-1 rounded bg-surface-container border border-outline-variant/20">
+<div class="text-label-sm font-label-sm text-on-surface-variant">CENTROID</div>
+<div class="text-label-md font-label-md font-semibold text-primary-fixed-dim">64.2, 34.1</div>
+</div>
+</div>
+</div>
+<!-- Team B Formation Card -->
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-fixed"></span>
+<span class="font-headline-sm text-xs text-on-surface">TOTTENHAM HOTSPUR</span>
+</div>
+<span class="text-label-sm font-label-sm text-primary-fixed-dim bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant/40">4-2-3-1 LOW BLOCK</span>
+</div>
+<div class="grid grid-cols-3 gap-1.5 text-center mt-1">
+<div class="p-1 rounded bg-surface-container border border-outline-variant/20">
+<div class="text-label-sm font-label-sm text-on-surface-variant">DEF LINE HEIGHT</div>
+<div class="text-label-md font-label-md font-semibold text-primary-fixed">28.5 m</div>
+</div>
+<div class="p-1 rounded bg-surface-container border border-outline-variant/20">
+<div class="text-label-sm font-label-sm text-on-surface-variant">VERTICAL GAP</div>
+<div class="text-label-md font-label-md font-semibold text-on-surface">14.2 m</div>
+</div>
+<div class="p-1 rounded bg-surface-container border border-outline-variant/20">
+<div class="text-label-sm font-label-sm text-on-surface-variant">PPDA PRESS</div>
+<div class="text-label-md font-label-md font-semibold text-secondary-fixed">8.4 HIGH</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT SIDE: 45% LARGE INTERACTIVE 2D TACTICAL PITCH RADAR -->
+<section class="xl:w-[45%] flex flex-col gap-2 bg-surface-container-low rounded border border-outline-variant/30 p-2.5">
+<!-- Radar Header Bar & View Modes -->
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+<span class="font-headline-sm text-sm text-on-surface">2D TACTICAL RADAR &amp; FORMATION ENGINE</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container px-1 py-0.5 rounded border border-outline-variant/40 text-label-sm font-label-sm">
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-primary-fixed-dim font-bold">22 PLAYER</button>
+<button class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface">PASS NET</button>
+<button class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface">HEATMAP</button>
+</div>
+</div>
+<!-- Tactical Metrics Drawers & Filter Toggles -->
+<div class="flex flex-wrap items-center justify-between gap-2 bg-surface-container-lowest p-2 rounded border border-outline-variant/20">
+<div class="flex items-center gap-3 text-label-sm font-label-sm">
+<label class="flex items-center gap-1.5 cursor-pointer text-secondary-fixed-dim">
+<input checked="" class="rounded bg-surface-container border-outline text-secondary-container focus:ring-0 w-3.5 h-3.5" type="checkbox"/>
+<span>Pitch Control Voronoi</span>
+</label>
+<label class="flex items-center gap-1.5 cursor-pointer text-primary-fixed-dim">
+<input checked="" class="rounded bg-surface-container border-outline text-primary-container focus:ring-0 w-3.5 h-3.5" type="checkbox"/>
+<span>Pass Network Vectors</span>
+</label>
+<label class="flex items-center gap-1.5 cursor-pointer text-on-surface-variant">
+<input class="rounded bg-surface-container border-outline text-primary-container focus:ring-0 w-3.5 h-3.5" type="checkbox"/>
+<span>Heatmap Overlay</span>
+</label>
+</div>
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-primary-fixed-dim">tune</span>
+<span>HIGH-PRESS PPDA: <strong class="text-primary-fixed-dim font-label-md">8.4</strong></span>
+</div>
+</div>
+<!-- 2D Full Pitch Tactical Canvas Representation -->
+<div class="relative w-full aspect-[1.5/1] bg-surface-container-lowest rounded border border-outline-variant/50 overflow-hidden tactical-grid-bg p-3 flex items-center justify-center">
+<!-- Pitch Field Markings (SVG Vector Coordinates) -->
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 105 68">
+<!-- Outer Boundary -->
+<rect fill="#101820" fill-opacity="0.85" height="64" stroke="#3b4b3d" stroke-width="0.8" width="101" x="2" y="2"></rect>
+<!-- Halfway Line & Center Circle -->
+<line stroke="#3b4b3d" stroke-width="0.8" x1="52.5" x2="52.5" y1="2" y2="66"></line>
+<circle cx="52.5" cy="34" fill="none" r="9.15" stroke="#3b4b3d" stroke-width="0.8"></circle>
+<circle cx="52.5" cy="34" fill="#3b4b3d" r="0.8"></circle>
+<!-- Left Penalty Area & 6-yard box (Chelsea Defending/Attacking right) -->
+<rect fill="none" height="40.32" stroke="#3b4b3d" stroke-width="0.8" width="16.5" x="2" y="13.84"></rect>
+<rect fill="none" height="18.32" stroke="#3b4b3d" stroke-width="0.8" width="5.5" x="2" y="24.84"></rect>
+<path d="M 18.5 28 A 9.15 9.15 0 0 1 18.5 40" fill="none" stroke="#3b4b3d" stroke-width="0.8"></path>
+<circle cx="11" cy="34" fill="#3b4b3d" r="0.7"></circle>
+<!-- Right Penalty Area & 6-yard box (Spurs Defending) -->
+<rect fill="none" height="40.32" stroke="#3b4b3d" stroke-width="0.8" width="16.5" x="86.5" y="13.84"></rect>
+<rect fill="none" height="18.32" stroke="#3b4b3d" stroke-width="0.8" width="5.5" x="97.5" y="24.84"></rect>
+<path d="M 86.5 28 A 9.15 9.15 0 0 0 86.5 40" fill="none" stroke="#3b4b3d" stroke-width="0.8"></path>
+<circle cx="94" cy="34" fill="#3b4b3d" r="0.7"></circle>
+<!-- Passing Network Vectors between Blue Nodes -->
+<g stroke="#00daf3" stroke-opacity="0.4" stroke-width="0.5">
+<line x1="42" x2="62" y1="34" y2="18"></line>
+<line x1="42" x2="65" y1="34" y2="48"></line>
+<line x1="62" x2="78" y1="18" y2="22"></line>
+<line x1="65" x2="80" y1="48" y2="45"></line>
+<line x1="64" x2="82" y1="34" y2="34"></line>
+</g>
+<!-- Passing Network Vectors between Spurs White Nodes -->
+<g stroke="#60ff99" stroke-dasharray="1 1" stroke-opacity="0.3" stroke-width="0.5">
+<line x1="88" x2="76" y1="34" y2="24"></line>
+<line x1="88" x2="76" y1="34" y2="44"></line>
+<line x1="76" x2="68" y1="24" y2="30"></line>
+<line x1="76" x2="68" y1="44" y2="38"></line>
+</g>
+<!-- Dynamic Ball Indicator -->
+<circle class="animate-pulse" cx="70" cy="32" fill="#00e479" r="1.4" stroke="#ffffff" stroke-width="0.5"></circle>
+<!-- TEAM A: CHELSEA FC (4-3-3 Blue Circles with Squad Numbers) -->
+<!-- GK #1 -->
+<g transform="translate(6, 34)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" font-weight="bold" text-anchor="middle" y="0.8">1</text></g>
+<!-- Back 4 -->
+<g transform="translate(24, 12)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">24</text></g>
+<g transform="translate(20, 26)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">6</text></g>
+<g transform="translate(20, 42)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">26</text></g>
+<g transform="translate(24, 56)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">21</text></g>
+<!-- Midfield 3 -->
+<g transform="translate(42, 34)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">5</text></g>
+<g transform="translate(54, 22)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">8</text></g>
+<g transform="translate(54, 46)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">17</text></g>
+<!-- Front 3 (Attacking Right) -->
+<g transform="translate(68, 16)"><circle fill="#00daf3" r="2.4" stroke="#ffffff" stroke-width="0.8"></circle><text fill="#001f24" font-family="JetBrains Mono" font-size="2" font-weight="bold" text-anchor="middle" y="0.8">19</text></g>
+<g transform="translate(74, 34)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">29</text></g>
+<g transform="translate(70, 52)"><circle fill="#00363d" r="2.2" stroke="#00daf3" stroke-width="0.8"></circle><text fill="#secondary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">7</text></g>
+<!-- TEAM B: SPURS (4-2-3-1 White/Cyan Nodes) -->
+<!-- GK #1 -->
+<g transform="translate(99, 34)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" font-weight="bold" text-anchor="middle" y="0.8">1</text></g>
+<!-- Back 4 Compact -->
+<g transform="translate(85, 14)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">12</text></g>
+<g transform="translate(83, 27)"><circle fill="#60ff99" r="2.4" stroke="#00210c" stroke-width="0.8"></circle><text fill="#00210c" font-family="JetBrains Mono" font-size="2" font-weight="bold" text-anchor="middle" y="0.8">15</text></g>
+<g transform="translate(83, 41)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">17</text></g>
+<g transform="translate(85, 54)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">33</text></g>
+<!-- Double Pivot -->
+<g transform="translate(74, 27)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">5</text></g>
+<g transform="translate(74, 41)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">30</text></g>
+<!-- Attacking Mid Trio -->
+<g transform="translate(62, 18)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">21</text></g>
+<g transform="translate(60, 34)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">7</text></g>
+<g transform="translate(62, 50)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">9</text></g>
+<!-- Striker #10 -->
+<g transform="translate(48, 34)"><circle fill="#1c2026" r="2.2" stroke="#60ff99" stroke-width="0.8"></circle><text fill="#primary" font-family="JetBrains Mono" font-size="2" text-anchor="middle" y="0.8">10</text></g>
+</svg>
+<!-- Selected Player Focus Lens Drawer (Anchored inside radar top right) -->
+<div class="absolute top-2 right-2 bg-surface-container/95 border border-secondary-fixed-dim/60 rounded p-2 text-xs w-48 backdrop-blur-md shadow-lg">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-1">
+<span class="text-label-sm font-label-sm text-secondary-fixed-dim font-bold">SELECTED TARGET</span>
+<span class="w-2 h-2 rounded-full bg-secondary-fixed-dim animate-ping"></span>
+</div>
+<div class="flex items-center gap-2 mt-1.5">
+<div class="w-7 h-7 rounded bg-surface-container-high border border-outline-variant/60 flex items-center justify-center font-label-lg font-bold text-secondary-fixed-dim">
+              19
+            </div>
+<div>
+<div class="font-headline-sm text-xs text-on-surface">M. Mount</div>
+<div class="text-[10px] text-on-surface-variant font-label-sm">LAM / Half-Space</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-1 mt-2 text-[10px] font-label-sm border-t border-outline-variant/30 pt-1.5">
+<div>POS: <strong class="text-on-surface">X: 68.2m</strong></div>
+<div>Y: <strong class="text-on-surface">16.4m</strong></div>
+<div>PASS ACC: <strong class="text-primary-fixed-dim">91.4%</strong></div>
+<div>PRESS EFF: <strong class="text-secondary-fixed-dim">84%</strong></div>
+</div>
+</div>
+</div>
+<!-- FORMATION EVOLUTION TIMELINE (15-Minute Tactical Shift Blocks) -->
+<div class="flex flex-col gap-1.5 mt-auto bg-surface-container p-2 rounded border border-outline-variant/30">
+<div class="flex items-center justify-between text-label-sm font-label-sm">
+<span class="text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary-fixed-dim">history</span>
+            FORMATION EVOLUTION &amp; TACTICAL PHASE TIMELINE
+          </span>
+<span class="text-on-surface-variant">CURRENT PHASE: 60'-75'</span>
+</div>
+<div class="grid grid-cols-6 gap-1 text-center font-label-sm text-[10px]">
+<!-- 0-15' -->
+<div class="p-1.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col items-center">
+<span class="text-on-surface-variant">00'-15'</span>
+<span class="text-secondary-fixed-dim font-bold mt-0.5">4-3-3</span>
+<span class="text-[8px] text-on-surface-variant">Standard</span>
+</div>
+<!-- 15-30' -->
+<div class="p-1.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col items-center">
+<span class="text-on-surface-variant">15'-30'</span>
+<span class="text-secondary-fixed-dim font-bold mt-0.5">4-2-4</span>
+<span class="text-[8px] text-on-surface-variant">High Flank</span>
+</div>
+<!-- 30-45' -->
+<div class="p-1.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col items-center">
+<span class="text-on-surface-variant">30'-45'</span>
+<span class="text-secondary-fixed-dim font-bold mt-0.5">4-3-3</span>
+<span class="text-[8px] text-on-surface-variant">Mid Press</span>
+</div>
+<!-- 45-60' -->
+<div class="p-1.5 rounded bg-surface-container-low border border-outline-variant/30 flex flex-col items-center">
+<span class="text-on-surface-variant">45'-60'</span>
+<span class="text-primary-fixed-dim font-bold mt-0.5">3-4-3</span>
+<span class="text-[8px] text-on-surface-variant">Wingback Push</span>
+</div>
+<!-- 60-75' (ACTIVE PHASE) -->
+<div class="p-1.5 rounded bg-surface-container-high border-2 border-primary-fixed-dim flex flex-col items-center shadow-[0_0_8px_rgba(0,255,136,0.2)]">
+<span class="text-primary-fixed-dim font-semibold">60'-75'</span>
+<span class="text-primary-fixed font-bold mt-0.5">4-3-3 ATT</span>
+<span class="text-[8px] text-primary-fixed-dim">Overload R</span>
+</div>
+<!-- 75-90' -->
+<div class="p-1.5 rounded bg-surface-container-low border border-outline-variant/20 opacity-60 flex flex-col items-center">
+<span class="text-on-surface-variant">75'-90'</span>
+<span class="text-on-surface-variant font-bold mt-0.5">--</span>
+<span class="text-[8px] text-on-surface-variant">Projected</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BOTTOM HUD SCRUBBER BAR -->
+<footer class="h-10 bg-surface-container-low/95 border-t border-outline-variant/30 px-margin flex items-center justify-between text-label-sm font-label-sm z-40">
+<div class="flex items-center gap-3">
+<span class="text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary-fixed-dim">sync_alt</span>
+        AI TRACKING ENGINE: TRACAB OPTICAL GEN-5 (29-JOINT SKELETAL MODEL)
+      </span>
+<span class="text-outline-variant">|</span>
+<span class="text-on-surface-variant">LATENCY: <strong class="text-primary-fixed-dim">1.8ms</strong></span>
+<span class="text-outline-variant">|</span>
+<span class="text-on-surface-variant">FPS: <strong class="text-on-surface">60.0 LOCKED</strong></span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface-variant">OFFICIAL DECISION STATUS:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container border border-primary-fixed-dim/40 text-primary-fixed-dim font-bold">NO CHECK PENDING</span>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface transition-all border border-outline-variant/50">
+<span class="material-symbols-outlined text-xs">camera_alt</span>
+<span>Snapshot Telemetry</span>
+</button>
+</div>
+</footer>
+</body></html>

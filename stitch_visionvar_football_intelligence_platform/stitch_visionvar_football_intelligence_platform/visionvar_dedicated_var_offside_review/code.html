@@ -1,0 +1,543 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>VisionVAR - Offside Review Calibrated Engine</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS with custom configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#181c22",
+            "on-tertiary-fixed": "#07006c",
+            "inverse-primary": "#006d37",
+            "secondary-fixed-dim": "#00daf3",
+            "tertiary-fixed": "#e1e0ff",
+            "secondary": "#bdf4ff",
+            "on-error": "#690005",
+            "inverse-surface": "#dfe2eb",
+            "inverse-on-surface": "#2d3137",
+            "primary-container": "#00ff88",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "surface": "#10141a",
+            "surface-container-lowest": "#0a0e14",
+            "outline": "#849585",
+            "tertiary": "#fdf9ff",
+            "surface-container": "#1c2026",
+            "on-error-container": "#ffdad6",
+            "on-surface-variant": "#b9cbb9",
+            "outline-variant": "#3b4b3d",
+            "on-primary-container": "#007139",
+            "secondary-container": "#00e3fd",
+            "on-primary-fixed": "#00210c",
+            "tertiary-fixed-dim": "#c0c1ff",
+            "primary-fixed-dim": "#00e479",
+            "surface-bright": "#353940",
+            "surface-container-high": "#262a31",
+            "surface-dim": "#10141a",
+            "tertiary-container": "#dcdbff",
+            "background": "#10141a",
+            "on-background": "#dfe2eb",
+            "on-secondary": "#00363d",
+            "on-primary": "#003919",
+            "on-secondary-fixed-variant": "#004f58",
+            "on-secondary-fixed": "#001f24",
+            "on-primary-fixed-variant": "#005228",
+            "on-tertiary-container": "#4c4eda",
+            "on-tertiary-fixed-variant": "#2f2ebe",
+            "surface-container-highest": "#31353c",
+            "on-tertiary": "#1000a9",
+            "primary-fixed": "#60ff99",
+            "secondary-fixed": "#9cf0ff",
+            "primary": "#f1ffef",
+            "on-surface": "#dfe2eb",
+            "on-secondary-container": "#00616d",
+            "surface-tint": "#00e479",
+            "surface-variant": "#31353c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.5rem",
+            "margin": "1rem",
+            "gutter": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-md": ["JetBrains Mono"],
+            "label-lg": ["JetBrains Mono"],
+            "display-xl": ["Space Grotesk"],
+            "label-sm": ["JetBrains Mono"],
+            "headline-lg-mobile": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "headline-md": ["Space Grotesk"],
+            "display-xl-mobile": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-sm": ["Space Grotesk"]
+          },
+          "fontSize": {
+            "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "display-xl": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "label-sm": ["9px", { "lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-xl-mobile": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.0em", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "22px", "letterSpacing": "0.0em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+    }
+    /* Perspective Pitch Calibration Overlays */
+    .laser-plane-red {
+      background: linear-gradient(180deg, rgba(255, 51, 102, 0.45) 0%, rgba(255, 51, 102, 0.08) 85%, transparent 100%);
+      box-shadow: 0 0 14px rgba(255, 51, 102, 0.8), inset 0 0 10px rgba(255, 51, 102, 0.3);
+    }
+    .laser-plane-cyan {
+      background: linear-gradient(180deg, rgba(0, 218, 243, 0.45) 0%, rgba(0, 218, 243, 0.08) 85%, transparent 100%);
+      box-shadow: 0 0 14px rgba(0, 218, 243, 0.8), inset 0 0 10px rgba(0, 218, 243, 0.3);
+    }
+    .laser-line-green {
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.9);
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface antialiased overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- ========================================== -->
+<!-- TOP APP BAR / HUD NAVIGATION (MANDATORY)  -->
+<!-- ========================================== -->
+<header class="flex justify-between items-center w-full px-margin h-14 z-50 sticky top-0 bg-surface-container-low/80 dark:bg-surface-container-low/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm backdrop-blur-xl">
+<!-- Brand Anchor & Stream Status -->
+<div class="flex items-center gap-space-lg">
+<div class="text-headline-sm font-headline-lg font-bold tracking-tight text-primary-fixed-dim dark:text-primary-fixed-dim flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="troubleshoot" style="font-variation-settings: 'FILL' 1;">troubleshoot</span>
+<span class="">VisionVAR</span>
+</div>
+<div class="hidden lg:flex items-center gap-space-sm pl-space-md border-l border-outline-variant/40">
+<span class="h-2 w-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">LIVE HUD // REVI-ENGINE 4.2</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-high text-secondary-fixed-dim border border-outline-variant/50">4K RAW 120FPS</span>
+</div>
+</div>
+<!-- Navigation Tabs (Exact Strings from JSON; Offside Review is ACTIVE) -->
+<nav class="hidden md:flex items-center gap-space-lg h-full">
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95" href="#">
+        Live Workspace
+      </a>
+<!-- Active Navigation Target per Semantic Lock: Offside Review -->
+<a class="border-b-2 border-primary-fixed-dim text-primary-fixed-dim font-label-md pb-1 flex items-center gap-1.5" href="#">
+<span class="h-1.5 w-1.5 rounded-full bg-primary-container"></span>
+        Offside Review
+      </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95" href="#">
+        Formation &amp; Radar
+      </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95" href="#">
+        Event Timeline
+      </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95" href="#">
+        Player Analytics
+      </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-md flex items-center gap-1.5 hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95" href="#">
+        Match Summary
+      </a>
+</nav>
+<!-- Trailing Actions & Official Avatar (Exact Strings from JSON) -->
+<div class="flex items-center gap-space-md">
+<!-- Icon Actions -->
+<div class="flex items-center gap-1">
+<button class="p-2 rounded hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95 text-on-surface-variant" title="Live Video Channel">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+</button>
+<button class="p-2 rounded hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95 text-on-surface-variant" title="Engine Settings">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 rounded hover:bg-surface-container-high/60 hover:text-primary-fixed-dim transition-all duration-150 active:scale-95 text-on-surface-variant" title="Toggle Fullscreen">
+<span class="material-symbols-outlined" data-icon="fullscreen">fullscreen</span>
+</button>
+</div>
+<!-- Secondary Action -->
+<button class="hidden xl:inline-flex items-center gap-1 px-3 py-1.5 rounded text-on-surface border border-outline-variant bg-surface-container-high/40 hover:bg-surface-container-high hover:text-primary-fixed-dim font-label-md text-label-md transition-all">
+        Export Telemetry
+      </button>
+<!-- Primary Action -->
+<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-primary-container text-on-primary-container font-headline-sm text-headline-sm font-semibold hover:shadow-lg hover:shadow-primary-container/20 transition-all duration-150 active:scale-95">
+<span class="h-2 w-2 rounded-full bg-surface-container-lowest"></span>
+        Broadcast Stream
+      </button>
+<!-- Chief VAR Match Official Avatar -->
+<div class="flex items-center gap-2 pl-space-xs border-l border-outline-variant/40">
+<div class="w-8 h-8 rounded-full border border-primary-fixed-dim/60 overflow-hidden bg-surface-container-high p-0.5">
+<img alt="Chief VAR Match Official Avatar" class="w-full h-full object-cover rounded-full" data-alt="High precision close-up portrait of a certified chief UEFA VAR referee in an ultra-modern dark control room, wearing specialized optical communication headset, focused screen reflections in dark clinical ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUOwdgdpJSGJ83a9o3_-3NmJUWherZh8ZWG0VMaD_FkPJ8zNvikcJNZevxAcIFMsQcI1ucaEx7k4BTnW80MpKd6qXmSXGrNFoOYXbuj7CTjGoiJ3DvroCN54EpKNGDOyRAdCxgEQgrWy-UX02BKq8_kFTsZ9ar0xtnBNzisJuh3SpPzYtyEIiPi8RUpBUTQnNRcq6HrBrExXr52HOQhS3AFx2L7QG8U2ylgamelzNLUzg9VLwat5i1">
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================== -->
+<!-- MATCH STATUS & MISSION-CRITICAL REVIEW HUD -->
+<!-- ========================================== -->
+<section class="w-full bg-surface-container-low/90 border-b border-outline-variant/40 px-margin py-2 flex flex-wrap items-center justify-between gap-4">
+<!-- Match Pill & Phase -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2 bg-surface-container-lowest/80 px-3 py-1 rounded border border-outline-variant/60">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">MCI</span>
+<span class="font-label-lg text-label-lg font-bold text-primary-fixed-dim">2 - 1</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">RMA</span>
+<span class="h-3 w-px bg-outline-variant mx-1"></span>
+<span class="font-label-md text-label-md text-secondary-fixed-dim font-semibold tracking-wider">67:24 2H</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-sm text-label-sm font-bold tracking-wide uppercase border border-error/30 animate-pulse">
+          INCIDENT REVIEW: POSSIBLE OFFSIDE
+        </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant hidden sm:inline">FRAME ID: #194,821 | CAM-07 TACTICAL SLOW-MO</span>
+</div>
+</div>
+<!-- Active Optical Confidence Metric -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-3 bg-surface-container-high/40 px-3 py-1 rounded border border-outline-variant/30">
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface-variant">AI CV CONFIDENCE: 92.4%</div>
+<div class="font-label-lg text-label-lg font-bold text-primary-fixed-dim">PITCH MAPPING: 12-POINT REPROJECTION</div>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-primary-container/40 border-t-primary-container flex items-center justify-center font-label-sm text-label-sm text-primary-container font-bold">
+          3D
+        </div>
+</div>
+<!-- Quick Toggle Utilities -->
+<div class="hidden md:flex items-center gap-1 bg-surface-container-lowest p-1 rounded border border-outline-variant/40">
+<button class="px-2 py-1 rounded text-primary-fixed-dim bg-surface-container font-label-sm text-label-sm font-semibold">3D Planes</button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm">Mesh Overlay</button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm">Vanishing Grid</button>
+</div>
+</div>
+</section>
+<!-- ========================================== -->
+<!-- MAIN WORKSPACE: THE OFFSIDE STAGE MATRIX   -->
+<!-- ========================================== -->
+<main class="w-full relative px-margin py-3 flex flex-col gap-3">
+<!-- High-Impact VAR Review Decision Alert Card -->
+<div class="w-full bg-surface-container/90 border border-primary-container/50 rounded-lg p-3 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 shadow-[0_0_24px_rgba(0,255,136,0.12)]"><div class="flex items-start gap-3 w-full lg:w-auto flex-1"><div class="w-9 h-9 rounded bg-primary-container/10 border border-primary-container/40 flex items-center justify-center text-primary-fixed-dim shrink-0 mt-0.5"><span class="material-symbols-outlined" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span></div><div class="space-y-1"> <div class="flex flex-wrap items-center gap-2"><span class="font-headline-sm text-headline-sm font-bold text-primary-fixed-dim">AI OFFSIDE ESTIMATION — MARGIN: +14.2 cm [ESTIMATED ONSIDE]</span><span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-container text-on-primary-container font-extrabold uppercase">CONFIDENCE: 92.4% (HOMOGRAPHY MESH CALIBRATED)</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Kick-Point Detection: Optical impact confirmed at Frame #194,821. Keypoint datum: Attacker (#19 Mount) upper sternum at 34.08m vs Defender (#15 Dier) trailing boot heel at 34.22m. Estimated separation: +14.2 cm. Uncertainty tolerance: ±1.8 cm.</p></div></div><div class="flex items-center gap-space-md shrink-0"><div class="text-right"><span class="font-label-sm text-label-sm text-on-surface-variant block">ESTIMATED DELTA</span><span class="font-label-lg text-label-lg font-bold text-secondary-fixed-dim">+14.2 cm [ONSIDE]</span></div><div class="h-8 w-px bg-outline-variant/50 hidden sm:block"></div><div class="text-right hidden sm:block"><span class="font-label-sm text-label-sm text-on-surface-variant block">CALIBRATED AXIS</span><span class="font-label-lg text-label-lg font-bold text-on-surface">34.22m / 34.08m</span></div></div></div>
+<!-- The Operational Calibration Viewport (Frozen Broadcast Pitch Frame) -->
+<div class="w-full relative aspect-[16/9] max-h-[660px] min-h-[460px] rounded-lg overflow-hidden bg-surface-container-lowest border border-outline-variant/60 shadow-2xl">
+<!-- Broadcast Background Video Frame -->
+<img alt="Calibrated VAR Freeze Frame Feed" class="absolute inset-0 w-full h-full object-cover object-center filter brightness-95 contrast-105" data-alt="Ultra high-definition UEFA Champions League broadcast frozen moment during a contested tactical through-ball into the penalty box. A dynamic striker in white and a blue kit defender are frozen mid-stride near the 18-yard box line with intense stadium lighting and dark emerald grass texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJKQcO46lczmV3uvMU3eNjMXPlcQaLNVIy5v2HBkqikgMCwf6KhsgsyogANRwEkMf5x11HrcJJdV4BnNkD9dPbihenmzIpHLHidbb-ovD8O76Q4C-mPCUZGxJ33GAss9Mjrw8JLVmVZwyjsPSxVdj8zCBLBzvRRZEhM5OXD9KLQylS8sm6zdYYug_jmDyCiqF0oshIklIU6vaDKCnsWI57iSX85ARI2xLRW4H2QU0Xv3RFgTpFGzio">
+<!-- Dark HUD Glass Grid Vignette -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/90 via-transparent to-surface-container-lowest/60 pointer-events-none"></div>
+<!-- Calibrated Vanishing Perspective Lines (SVG Overlay) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="gridCyan" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0%" stop-color="#00daf3" stop-opacity="0.1"></stop>
+<stop offset="50%" stop-color="#00daf3" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#00daf3" stop-opacity="0.1"></stop>
+</linearGradient>
+</defs>
+<!-- Dynamic Pitch Lines (Vanishing toward broadcast camera origin) -->
+<line opacity="0.6" stroke="#3b4b3d" stroke-dasharray="4 4" stroke-width="1.5" x1="0%" x2="100%" y1="92%" y2="84%"></line>
+<line opacity="0.5" stroke="#3b4b3d" stroke-dasharray="6 4" stroke-width="1" x1="0%" x2="100%" y1="74%" y2="68%"></line>
+<line opacity="0.4" stroke="#3b4b3d" stroke-dasharray="8 6" stroke-width="1" x1="0%" x2="100%" y1="56%" y2="52%"></line>
+<!-- Cross-pitch Transverse Perspective Calibration Vectors -->
+<line opacity="0.25" stroke="#00daf3" stroke-width="1" x1="38%" x2="22%" y1="40%" y2="100%"></line>
+<line opacity="0.25" stroke="#00daf3" stroke-width="1" x1="56%" x2="52%" y1="40%" y2="100%"></line>
+<line opacity="0.25" stroke="#00daf3" stroke-width="1" x1="74%" x2="82%" y1="40%" y2="100%"></line>
+<!-- Contact Ground Intersection Marker for Ball -->
+<circle cx="73.5%" cy="75.2%" fill="none" r="18" stroke="#00ff88" stroke-dasharray="3 3" stroke-width="1.5"></circle>
+<circle cx="73.5%" cy="75.2%" fill="#00ff88" r="4"></circle>
+<line stroke="#00ff88" stroke-dasharray="2 2" stroke-width="1.5" x1="73.5%" x2="73.5%" y1="75.2%" y2="62%"></line>
+</svg>
+<!-- 3D COMPUTER VISION OVERLAY: DEFENDER OFFENSIVE LINE (RED PLANE) -->
+<!-- Dier #15 Defending Line: 34.22m -->
+<div class="absolute top-[28%] left-[53.8%] w-[2px] h-[58%] bg-error/90 laser-plane-red pointer-events-none">
+<!-- Floating Telemetry Tag (Defender) -->
+<div class="absolute -top-7 -left-20 bg-surface-container-lowest/90 border border-error px-2 py-0.5 rounded text-left whitespace-nowrap backdrop-blur-md shadow-lg">
+<div class="font-label-sm text-label-sm text-error font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+            DEFENDER: DIER #15
+          </div>
+<div class="font-label-sm text-label-sm text-on-surface font-mono">
+            AXIS: 34.22m [HEEL DATUM]
+          </div>
+</div>
+<!-- Ground Foot Contact Reticle -->
+<div class="absolute bottom-0 -left-2.5 w-6 h-3 rounded-full border border-error bg-error/20"></div>
+</div>
+<!-- 3D COMPUTER VISION OVERLAY: ATTACKER OFFENSIVE LINE (ELECTRIC CYAN PLANE) -->
+<!-- Mount #19 Attacking Line: 34.08m -->
+<div class="absolute top-[26%] left-[49.6%] w-[2px] h-[60%] bg-secondary-fixed-dim/90 laser-plane-cyan pointer-events-none">
+<!-- Floating Telemetry Tag (Attacker) -->
+<div class="absolute -top-7 -left-2 bg-surface-container-lowest/90 border border-secondary-fixed-dim px-2 py-0.5 rounded text-left whitespace-nowrap backdrop-blur-md shadow-lg">
+<div class="font-label-sm text-label-sm text-secondary-fixed-dim font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim"></span>
+            ATTACKER: MOUNT #19
+          </div>
+<div class="font-label-sm text-label-sm text-on-surface font-mono">
+            AXIS: 34.08m [SHOULDER DATUM]
+          </div>
+</div>
+<!-- Ground Foot Contact Reticle -->
+<div class="absolute bottom-0 -left-2.5 w-6 h-3 rounded-full border border-secondary-fixed-dim bg-secondary-fixed-dim/20"></div>
+</div>
+<!-- Delta Distance Graphic Interstice (Ground Level) -->
+<div class="absolute bottom-[16%] left-[49.6%] w-[4.2%] h-4 border-t-2 border-primary-container bg-primary-container/15 flex items-center justify-center pointer-events-none">
+<span class="font-label-sm text-label-sm font-bold text-primary-fixed-dim bg-surface-container-lowest/80 px-1 border border-primary-container/40">
+          Δ +14cm
+        </span>
+</div>
+<!-- TOP-LEFT VIEWPORT HUD: CAMERA & REVI STATE -->
+<div class="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-auto">
+<div class="flex items-center gap-2 bg-surface-container-low/85 backdrop-blur-md border border-outline-variant/60 px-3 py-1.5 rounded">
+<span class="h-2 w-2 rounded-full bg-primary-container"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">3D MULTI-CAMERA HOMOGRAPHY RECONSTRUCTION</span>
+<span class="text-outline-variant">|</span>
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim">PITCH-GRID: CALIBRATED (12 V-POINTS)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="bg-surface-container-lowest/80 px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
+            FOCAL: 85mm
+          </span>
+<span class="bg-surface-container-lowest/80 px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
+            APERTURE: ƒ/2.8
+          </span>
+<span class="bg-surface-container-lowest/80 px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
+            DISTORTION: 0.002%
+          </span>
+</div>
+</div>
+<!-- TOP-RIGHT VIEWPORT HUD: BALL KICK-POINT SUB-FRAME THUMBNAIL (CRITICAL) -->
+<div class="absolute top-3 right-3 w-52 sm:w-64 bg-surface-container-low/95 border border-primary-fixed-dim/60 rounded backdrop-blur-lg overflow-hidden shadow-2xl pointer-events-auto">
+<div class="px-2.5 py-1.5 bg-surface-container border-b border-outline-variant/50 flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-fixed-dim text-sm" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">BALL CONTACT POINT</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim font-mono">CONFIRMED</span>
+</div>
+<div class="relative h-28 w-full bg-surface-container-lowest overflow-hidden">
+<img alt="Ball kick-point optical contact verification" class="w-full h-full object-cover" data-alt="Extreme high-speed macro zoom frame of soccer player cleat striking the official UEFA match ball on pitch grass. Crisp optical impact compression, razor sharp turf flying, and digital laser crosshairs positioned on exact ball impact center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ4G9NtA1w7qPzl3rJXXRDgf7KWoemV2rQOM0Y-MAjVoPtPxTMUQGs00dEJedVexf8XWfGS15wVPGmJ8F7CY1UibWHC0yngdVs0dXNHfhQ1MYsGnH9cZeliwBF8fom7bWp1-yCal2PXWsHyGzDWwsEhEO6V6qVdcLIN73Yr5Fo4NJps-yCy3LoCXMB2xa1phEf107Jp_hWBnMl51YIRKnjQaDYp1nriOk1u4x0-aI-pMNKepN8EnNk">
+<!-- Crosshair on contact -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-8 h-8 border border-primary-container/80 rounded-full flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-primary-container rounded-full"></div>
+</div>
+<div class="absolute w-12 h-px bg-primary-container/80"></div>
+<div class="absolute h-12 w-px bg-primary-container/80"></div>
+</div>
+<!-- Sub-frame micro coordinates -->
+<div class="absolute bottom-1 left-1.5 font-label-sm text-label-sm bg-surface-container-lowest/80 px-1 rounded text-secondary-fixed-dim font-mono">
+            KICK: 01:07:24.482
+          </div>
+</div>
+<div class="p-2 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm bg-surface-container-low">
+<span class="">FRAME: #194,821</span>
+<span class="text-primary-fixed-dim font-mono">BALL SPEED: 94.2 km/h</span>
+</div>
+</div>
+<!-- BOTTOM-LEFT FLOATING TELEMETRY MARGIN BADGE -->
+<div class="absolute bottom-3 left-3 bg-surface-container-low/90 backdrop-blur-md border border-outline-variant/60 rounded p-2.5 flex flex-col gap-1 pointer-events-auto">
+<div class="font-label-sm text-label-sm text-on-surface-variant font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-sm" data-icon="square_foot">square_foot</span>
+          PERSPECTIVE CALIBRATION RESULT
+        </div>
+<div class="font-label-md text-label-md font-bold text-on-surface font-mono">
+          OFFSIDE DELTA: <span class="text-primary-fixed-dim">+0.14m</span> [LEGAL / ONSIDE]
+        </div>
+<div class="flex items-center gap-3 font-label-sm text-label-sm text-on-surface-variant">
+<span class="">Defending Line: <strong class="text-error font-mono">34.22m</strong></span>
+<span class="">Attacking Line: <strong class="text-secondary-fixed-dim font-mono">34.08m</strong></span>
+</div>
+</div>
+<!-- BOTTOM-RIGHT VIEW ANGLE HAWK-EYE SWITCHER -->
+<div class="absolute bottom-3 right-3 flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-md p-1 rounded border border-outline-variant/50 pointer-events-auto">
+<button class="px-2 py-1 rounded bg-primary-fixed-dim/20 text-primary-fixed-dim border border-primary-fixed-dim/40 font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+          CAM 07 (Main VAR)
+        </button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+          CAM 02 (16m Line)
+        </button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="3d_rotation">3d_rotation</span>
+          3D Hawk-Eye Rig
+        </button>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- CALIBRATION CONTROLS & STEPPER CONSOLE     -->
+<!-- ========================================== -->
+<div class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg p-3 flex flex-wrap items-center justify-between gap-4">
+<!-- Sub-frame Micro Stepper & Scrub Unit -->
+<div class="flex items-center gap-2">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold tracking-wider mr-1">
+          SUB-FRAME STEPPER:
+        </div>
+<div class="flex items-center bg-surface-container-lowest rounded border border-outline-variant/60 p-0.5">
+<button class="px-2.5 py-1 text-on-surface hover:bg-surface-container-high rounded font-label-sm text-label-sm transition-all active:scale-95" title="Step back 5 frames">-5f</button>
+<button class="px-2.5 py-1 text-on-surface hover:bg-surface-container-high rounded font-label-sm text-label-sm transition-all active:scale-95" title="Step back 1 frame">-1f</button>
+<div class="px-3 py-1 font-label-md text-label-md font-bold text-primary-fixed-dim bg-surface-container border-x border-outline-variant/40 font-mono">
+            FR: 194,821 [0.00ms]
+          </div>
+<button class="px-2.5 py-1 text-on-surface hover:bg-surface-container-high rounded font-label-sm text-label-sm transition-all active:scale-95" title="Step forward 1 frame">+1f</button>
+<button class="px-2.5 py-1 text-on-surface hover:bg-surface-container-high rounded font-label-sm text-label-sm transition-all active:scale-95" title="Step forward 5 frames">+5f</button>
+</div>
+<button class="p-2 rounded bg-surface-container-high/60 hover:bg-surface-container-high text-secondary-fixed-dim border border-outline-variant/50 transition-all" title="Synchronize All Camera Feeds">
+<span class="material-symbols-outlined" data-icon="sync">sync</span>
+</button>
+</div>
+<!-- Calibration Tool Toggles -->
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-on-surface border border-outline-variant hover:border-secondary-fixed-dim font-label-md text-label-md transition-all">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-icon="tune">tune</span>
+          Kick-Point Anchor Selector
+        </button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-on-surface border border-outline-variant hover:border-primary-fixed-dim font-label-md text-label-md transition-all">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="straighten">straighten</span>
+          Manual Vanishing Point Toggle
+        </button>
+</div>
+<!-- Verification Actions & Broadcast Decision Pipeline -->
+<div class="flex items-center gap-2.5">
+<button class="flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container-high text-on-surface hover:text-primary-fixed-dim border border-outline-variant font-label-md text-label-md transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="view_in_ar">view_in_ar</span>
+          Request Alternate Hawk-Eye Angle
+        </button>
+<button class="flex items-center gap-1.5 px-4 py-2 rounded bg-primary-container text-on-primary-container font-headline-sm text-headline-sm font-bold shadow-[0_0_18px_rgba(0,255,136,0.35)] hover:shadow-[0_0_24px_rgba(0,255,136,0.5)] transition-all duration-150 active:scale-95"><span class="material-symbols-outlined font-bold" data-icon="send" style="font-variation-settings: &quot;FILL&quot; 1;">send</span> Send AI Offside Dossier to Review Official</button>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- BENTO TELEMETRY METRIC INSPECTORS          -->
+<!-- ========================================== -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<!-- Card 1: Player Tracking & Velocity Coordinates -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-lg p-3 flex flex-col justify-between">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-icon="directions_run">directions_run</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">ATTACKER LOCOMOTION VECTOR</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim font-mono">31.4 km/h</span>
+</div>
+<div class="space-y-1.5 font-label-sm text-label-sm">
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Mount #19 Centroid:</span>
+<span class="font-mono text-on-surface">X: 34.08m | Y: -8.12m | Z: 1.42m</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Skeletal Datum Point:</span>
+<span class="font-mono text-secondary-fixed-dim">Upper Right Acromion (Legal)</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Acceleration Phase:</span>
+<span class="font-mono text-on-surface">+2.18 m/s² (Forward Surge)</span>
+</div>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant/30 flex items-center justify-between text-label-sm font-label-sm">
+<span class="text-on-surface-variant">Body lean angle: <strong class="text-on-surface">18.4° forward</strong></span>
+<span class="text-primary-fixed-dim font-bold">CLEAR OF VIOLATION</span>
+</div>
+</div>
+<!-- Card 2: Defender Defensive Axis Calibration -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-lg p-3 flex flex-col justify-between">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error" data-icon="shield">shield</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">SECOND-LAST DEFENDER DATUM</span>
+</div>
+<span class="font-label-sm text-label-sm text-error font-mono">DEPTH: 34.22m</span>
+</div>
+<div class="space-y-1.5 font-label-sm text-label-sm">
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Dier #15 Centroid:</span>
+<span class="font-mono text-on-surface">X: 34.22m | Y: -7.88m | Z: 0.12m</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Furthest Legal Body Part:</span>
+<span class="font-mono text-error">Right Boot Cleat Heel Contact</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Goal-Line Distance:</span>
+<span class="font-mono text-on-surface">34.22m to North Goal Line</span>
+</div>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant/30 flex items-center justify-between text-label-sm font-label-sm">
+<span class="text-on-surface-variant">Offside Reference Baseline:</span>
+<span class="text-error font-bold font-mono">ESTABLISHED // LOCKED</span>
+</div>
+</div>
+<!-- Card 3: VAR Protocol Transmission & Verification Log -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-lg p-3 flex flex-col justify-between">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="podium">podium</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">OFFICIAL AUDIT &amp; EXPORT DISPATCH</span>
+</div>
+<span class="h-2 w-2 rounded-full bg-primary-container"></span>
+</div>
+<div class="space-y-1.5 font-label-sm text-label-sm">
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Referee Signal Status:</span>
+<span class="font-mono text-primary-fixed-dim">VAR FEED STREAM: LIVE (WEBRTC)</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Broadcast Graphics Feed:</span>
+<span class="font-mono text-secondary-fixed-dim">3D RENDER READY FOR ON-AIR</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Latency / Ping to Pitch:</span>
+<span class="font-mono text-on-surface">&lt; 14ms (Sub-millisecond jitter)</span>
+</div>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant/30 flex items-center justify-between">
+<button class="w-full py-1 text-center bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/50 text-on-surface font-label-sm text-label-sm rounded transition-all">Export Verified Homography Dossier (.JSON / .VAR3D)</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Script for lightweight reactive micro-interactions -->
+<script>
+    // Sub-frame stepper interactive preview simulation
+    document.addEventListener('DOMContentLoaded', () => {
+      const stepperButtons = document.querySelectorAll('button[title*="Step"]');
+      stepperButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.add('ring-1', 'ring-primary-container');
+          setTimeout(() => {
+            btn.classList.remove('ring-1', 'ring-primary-container');
+          }, 150);
+        });
+      });
+    });
+  </script>
+
+
+</body></html>

@@ -1,0 +1,935 @@
+{
+  "session_id": "UCL-2024-MCI-RMA-F",
+  "video_id": "vid_fe4fda045c93",
+  "video_file": "video_preview_h264.mp4",
+  "total_frames": 378,
+  "processed_frames": 95,
+  "frame_skip": 4,
+  "fps": 29.97002997002997,
+  "processing_duration_seconds": 9.68,
+  "total_detections_count": 15,
+  "records": [
+    {
+      "frame": 0,
+      "timestamp": 0.0,
+      "inference_ms": 139.9,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 4,
+      "timestamp": 0.133,
+      "inference_ms": 114.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 8,
+      "timestamp": 0.267,
+      "inference_ms": 115.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 12,
+      "timestamp": 0.4,
+      "inference_ms": 105.1,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 16,
+      "timestamp": 0.534,
+      "inference_ms": 95.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 20,
+      "timestamp": 0.667,
+      "inference_ms": 99.1,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 24,
+      "timestamp": 0.801,
+      "inference_ms": 90.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 28,
+      "timestamp": 0.934,
+      "inference_ms": 106.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 32,
+      "timestamp": 1.068,
+      "inference_ms": 97.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 36,
+      "timestamp": 1.201,
+      "inference_ms": 93.0,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 40,
+      "timestamp": 1.335,
+      "inference_ms": 101.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 44,
+      "timestamp": 1.468,
+      "inference_ms": 95.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 48,
+      "timestamp": 1.602,
+      "inference_ms": 108.2,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.2632,
+          "bbox": {
+            "x1": 398.99,
+            "y1": 402.38,
+            "x2": 408.94,
+            "y2": 419.83
+          }
+        }
+      ]
+    },
+    {
+      "frame": 52,
+      "timestamp": 1.735,
+      "inference_ms": 105.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 56,
+      "timestamp": 1.869,
+      "inference_ms": 91.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 60,
+      "timestamp": 2.002,
+      "inference_ms": 100.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 64,
+      "timestamp": 2.135,
+      "inference_ms": 100.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 68,
+      "timestamp": 2.269,
+      "inference_ms": 108.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 72,
+      "timestamp": 2.402,
+      "inference_ms": 102.3,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 76,
+      "timestamp": 2.536,
+      "inference_ms": 99.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 80,
+      "timestamp": 2.669,
+      "inference_ms": 83.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 84,
+      "timestamp": 2.803,
+      "inference_ms": 100.9,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 88,
+      "timestamp": 2.936,
+      "inference_ms": 117.0,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 92,
+      "timestamp": 3.07,
+      "inference_ms": 115.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 96,
+      "timestamp": 3.203,
+      "inference_ms": 154.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 100,
+      "timestamp": 3.337,
+      "inference_ms": 129.3,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 104,
+      "timestamp": 3.47,
+      "inference_ms": 142.1,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.2695,
+          "bbox": {
+            "x1": 202.57,
+            "y1": 313.73,
+            "x2": 217.92,
+            "y2": 349.14
+          }
+        }
+      ]
+    },
+    {
+      "frame": 108,
+      "timestamp": 3.604,
+      "inference_ms": 96.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 112,
+      "timestamp": 3.737,
+      "inference_ms": 112.2,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.2775,
+          "bbox": {
+            "x1": 406.73,
+            "y1": 359.18,
+            "x2": 417.97,
+            "y2": 378.44
+          }
+        }
+      ]
+    },
+    {
+      "frame": 116,
+      "timestamp": 3.871,
+      "inference_ms": 169.3,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.2525,
+          "bbox": {
+            "x1": 405.72,
+            "y1": 358.07,
+            "x2": 417.14,
+            "y2": 377.04
+          }
+        }
+      ]
+    },
+    {
+      "frame": 120,
+      "timestamp": 4.004,
+      "inference_ms": 120.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 124,
+      "timestamp": 4.137,
+      "inference_ms": 114.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 128,
+      "timestamp": 4.271,
+      "inference_ms": 126.3,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 132,
+      "timestamp": 4.404,
+      "inference_ms": 106.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 136,
+      "timestamp": 4.538,
+      "inference_ms": 120.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 140,
+      "timestamp": 4.671,
+      "inference_ms": 124.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 144,
+      "timestamp": 4.805,
+      "inference_ms": 146.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 148,
+      "timestamp": 4.938,
+      "inference_ms": 117.3,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.3173,
+          "bbox": {
+            "x1": 249.1,
+            "y1": 260.07,
+            "x2": 263.62,
+            "y2": 285.86
+          }
+        }
+      ]
+    },
+    {
+      "frame": 152,
+      "timestamp": 5.072,
+      "inference_ms": 108.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 156,
+      "timestamp": 5.205,
+      "inference_ms": 106.3,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 160,
+      "timestamp": 5.339,
+      "inference_ms": 132.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 164,
+      "timestamp": 5.472,
+      "inference_ms": 99.0,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 168,
+      "timestamp": 5.606,
+      "inference_ms": 85.4,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 172,
+      "timestamp": 5.739,
+      "inference_ms": 49.0,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 176,
+      "timestamp": 5.873,
+      "inference_ms": 86.9,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 180,
+      "timestamp": 6.006,
+      "inference_ms": 64.9,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 184,
+      "timestamp": 6.139,
+      "inference_ms": 54.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 188,
+      "timestamp": 6.273,
+      "inference_ms": 52.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 192,
+      "timestamp": 6.406,
+      "inference_ms": 51.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 196,
+      "timestamp": 6.54,
+      "inference_ms": 68.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 200,
+      "timestamp": 6.673,
+      "inference_ms": 58.4,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.251,
+          "bbox": {
+            "x1": 478.99,
+            "y1": 515.41,
+            "x2": 493.61,
+            "y2": 537.93
+          }
+        }
+      ]
+    },
+    {
+      "frame": 204,
+      "timestamp": 6.807,
+      "inference_ms": 48.2,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.2547,
+          "bbox": {
+            "x1": 477.46,
+            "y1": 517.85,
+            "x2": 496.15,
+            "y2": 540.0
+          }
+        }
+      ]
+    },
+    {
+      "frame": 208,
+      "timestamp": 6.94,
+      "inference_ms": 54.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 212,
+      "timestamp": 7.074,
+      "inference_ms": 56.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 216,
+      "timestamp": 7.207,
+      "inference_ms": 46.4,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 220,
+      "timestamp": 7.341,
+      "inference_ms": 52.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 224,
+      "timestamp": 7.474,
+      "inference_ms": 41.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 228,
+      "timestamp": 7.608,
+      "inference_ms": 46.3,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 232,
+      "timestamp": 7.741,
+      "inference_ms": 52.1,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 236,
+      "timestamp": 7.875,
+      "inference_ms": 39.1,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 240,
+      "timestamp": 8.008,
+      "inference_ms": 53.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 244,
+      "timestamp": 8.141,
+      "inference_ms": 49.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 248,
+      "timestamp": 8.275,
+      "inference_ms": 43.9,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 252,
+      "timestamp": 8.408,
+      "inference_ms": 52.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 256,
+      "timestamp": 8.542,
+      "inference_ms": 43.6,
+      "player_count": 3,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.335,
+          "bbox": {
+            "x1": 407.24,
+            "y1": 162.05,
+            "x2": 418.25,
+            "y2": 182.44
+          }
+        },
+        {
+          "class": "player",
+          "confidence": 0.3019,
+          "bbox": {
+            "x1": 378.46,
+            "y1": 183.86,
+            "x2": 392.05,
+            "y2": 205.51
+          }
+        },
+        {
+          "class": "player",
+          "confidence": 0.2561,
+          "bbox": {
+            "x1": 557.89,
+            "y1": 224.71,
+            "x2": 600.83,
+            "y2": 303.68
+          }
+        }
+      ]
+    },
+    {
+      "frame": 260,
+      "timestamp": 8.675,
+      "inference_ms": 39.8,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.3034,
+          "bbox": {
+            "x1": 378.55,
+            "y1": 182.43,
+            "x2": 391.95,
+            "y2": 208.66
+          }
+        }
+      ]
+    },
+    {
+      "frame": 264,
+      "timestamp": 8.809,
+      "inference_ms": 46.3,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 268,
+      "timestamp": 8.942,
+      "inference_ms": 44.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 272,
+      "timestamp": 9.076,
+      "inference_ms": 49.4,
+      "player_count": 2,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.3176,
+          "bbox": {
+            "x1": 569.45,
+            "y1": 233.97,
+            "x2": 595.08,
+            "y2": 308.57
+          }
+        },
+        {
+          "class": "player",
+          "confidence": 0.2929,
+          "bbox": {
+            "x1": 579.38,
+            "y1": 235.18,
+            "x2": 606.2,
+            "y2": 307.8
+          }
+        }
+      ]
+    },
+    {
+      "frame": 276,
+      "timestamp": 9.209,
+      "inference_ms": 53.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 280,
+      "timestamp": 9.343,
+      "inference_ms": 39.9,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 284,
+      "timestamp": 9.476,
+      "inference_ms": 56.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 288,
+      "timestamp": 9.61,
+      "inference_ms": 45.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 292,
+      "timestamp": 9.743,
+      "inference_ms": 45.0,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 296,
+      "timestamp": 9.877,
+      "inference_ms": 47.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 300,
+      "timestamp": 10.01,
+      "inference_ms": 44.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 304,
+      "timestamp": 10.143,
+      "inference_ms": 45.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 308,
+      "timestamp": 10.277,
+      "inference_ms": 43.2,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.2578,
+          "bbox": {
+            "x1": 573.16,
+            "y1": 231.71,
+            "x2": 600.46,
+            "y2": 309.21
+          }
+        }
+      ]
+    },
+    {
+      "frame": 312,
+      "timestamp": 10.41,
+      "inference_ms": 46.3,
+      "player_count": 1,
+      "ball_detected": false,
+      "detections": [
+        {
+          "class": "player",
+          "confidence": 0.2602,
+          "bbox": {
+            "x1": 278.9,
+            "y1": 267.55,
+            "x2": 289.91,
+            "y2": 285.01
+          }
+        }
+      ]
+    },
+    {
+      "frame": 316,
+      "timestamp": 10.544,
+      "inference_ms": 37.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 320,
+      "timestamp": 10.677,
+      "inference_ms": 42.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 324,
+      "timestamp": 10.811,
+      "inference_ms": 43.0,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 328,
+      "timestamp": 10.944,
+      "inference_ms": 44.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 332,
+      "timestamp": 11.078,
+      "inference_ms": 39.1,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 336,
+      "timestamp": 11.211,
+      "inference_ms": 45.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 340,
+      "timestamp": 11.345,
+      "inference_ms": 42.4,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 344,
+      "timestamp": 11.478,
+      "inference_ms": 44.3,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 348,
+      "timestamp": 11.612,
+      "inference_ms": 44.9,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 352,
+      "timestamp": 11.745,
+      "inference_ms": 42.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 356,
+      "timestamp": 11.879,
+      "inference_ms": 44.8,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 360,
+      "timestamp": 12.012,
+      "inference_ms": 43.5,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 364,
+      "timestamp": 12.145,
+      "inference_ms": 41.7,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 368,
+      "timestamp": 12.279,
+      "inference_ms": 42.6,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 372,
+      "timestamp": 12.412,
+      "inference_ms": 43.0,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    },
+    {
+      "frame": 376,
+      "timestamp": 12.546,
+      "inference_ms": 39.2,
+      "player_count": 0,
+      "ball_detected": false,
+      "detections": []
+    }
+  ]
+}
