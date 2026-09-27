@@ -23,6 +23,11 @@ class MatchEventResponse(BaseModel):
     saotMarginCm: Optional[float] = None
     aiExplanation: Optional[str] = None
     isActive: Optional[bool] = False
+    
+    # Phase 7A
+    status: Optional[str] = None
+    confidence: Optional[float] = None
+    metadata_json: Optional[str] = None
 
 
 class MatchEventsListResponse(BaseModel):
