@@ -4,17 +4,22 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { mockMatch, AVATAR_URL } from '@/lib/mockData/match';
 
-const NAV_LINKS = [
-  { label: 'Live Workspace', path: `/sessions/${mockMatch.id}` },
-  { label: 'Offside Review', path: `/sessions/${mockMatch.id}/offside-review` },
-  { label: 'Formation & Radar', path: `/sessions/${mockMatch.id}/formation` },
-  { label: 'Event Timeline', path: `/sessions/${mockMatch.id}/timeline` },
-  { label: 'Player Analytics', path: `/sessions/${mockMatch.id}/players` },
-  { label: 'Match Summary', path: `/sessions/${mockMatch.id}/summary` },
+const getNavLinks = (sessionId: string) => [
+  { label: 'Live Workspace', path: `/sessions/${sessionId}` },
+  { label: 'Offside Review', path: `/sessions/${sessionId}/offside-review` },
+  { label: 'Formation & Radar', path: `/sessions/${sessionId}/formation` },
+  { label: 'Event Timeline', path: `/sessions/${sessionId}/timeline` },
+  { label: 'Player Analytics', path: `/sessions/${sessionId}/players` },
+  { label: 'Match Summary', path: `/sessions/${sessionId}/summary` },
 ];
+
+import { useParams } from 'next/navigation';
 
 export default function TopNavBar() {
   const pathname = usePathname();
+  const params = useParams();
+  const sessionId = (params?.id as string) || mockMatch.id;
+  const navLinks = getNavLinks(sessionId);
 
   return (
     <header
@@ -51,7 +56,7 @@ export default function TopNavBar() {
 
         {/* Nav links */}
         <nav className="hidden md:flex items-center gap-3 lg:gap-4 pl-4 flex-1 overflow-x-auto no-scrollbar mask-edge" style={{ borderLeft: '1px solid rgba(59,75,61,0.4)' }}>
-          {NAV_LINKS.map(({ label, path }) => {
+          {navLinks.map(({ label, path }) => {
             const isActive = pathname === path;
             return (
               <Link

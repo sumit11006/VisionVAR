@@ -103,12 +103,12 @@ class DetectionService(BaseDetectionService):
         detections: List[DetectionItem] = []
 
         try:
-            # Run inference (classes=[0, 32] restricts inference to person & sports ball)
+            # 1. Player Detection (using base YOLO model)
             results = DetectionService._model(
                 frame_bgr,
                 conf=threshold,
                 device=self.device,
-                classes=list(self.TARGET_CLASSES.keys()),
+                classes=[0], # Person only
                 verbose=False,
             )
 
@@ -119,12 +119,11 @@ class DetectionService(BaseDetectionService):
                         cls_id = int(boxes.cls[i].item())
                         conf = float(boxes.conf[i].item())
                         xyxy = boxes.xyxy[i].tolist()  # [x1, y1, x2, y2]
-
-                        class_name = self.TARGET_CLASSES.get(cls_id, "unknown")
-                        if class_name in ("player", "ball"):
+                        
+                        if cls_id == 0:
                             detections.append(
                                 DetectionItem(
-                                    class_name=class_name,
+                                    class_name="player",
                                     confidence=round(conf, 4),
                                     bbox=BoundingBox(
                                         x1=round(xyxy[0], 2),
@@ -134,6 +133,15 @@ class DetectionService(BaseDetectionService):
                                     ),
                                 )
                             )
+
+            # 2. Ball Detection via Abstraction
+            detector_type = os.getenv("BALL_DETECTOR", "yolo")
+            from backend.cv.detection.ball import get_ball_detector
+            ball_detector = get_ball_detector(detector_type, DetectionService._model)
+            
+            inference_conf = min(0.12, threshold)
+            ball_detections = ball_detector.detect(frame_bgr, conf_threshold=inference_conf, device=self.device)
+            detections.extend(ball_detections)
 
             return FrameDetectionResult(
                 frame=frame_number,

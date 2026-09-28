@@ -69,6 +69,51 @@ export interface TrackedItem {
   frame: number;
   timestamp: number;
   state: string;
+  team?: string;
+  team_confidence?: number;
+  pitch_position?: { x: number; y: number };
+  mapping_status?: string;
+  movement_trail?: [number, number][];
+}
+
+export interface BallState {
+  track_id: number;
+  state: 'tracked' | 'lost' | 'reacquired' | 'unavailable';
+  image_position?: { x: number; y: number } | null;
+  pitch_position?: { x: number; y: number } | null;
+  confidence?: number;
+  bbox?: number[] | null;
+  movement_trail?: [number, number][];
+}
+
+export interface OffsideCandidate {
+  status: 'candidate' | 'insufficient_evidence';
+  reason?: string;
+  ball_contact?: {
+    state: string;
+    confidence: number;
+    evidence?: any;
+  };
+  team_a_attacking_dir?: string;
+  team_b_attacking_dir?: string;
+  offside_line_against_a?: {
+    status: string;
+    x: number;
+    defender_id?: number;
+  };
+  offside_line_against_b?: {
+    status: string;
+    x: number;
+    defender_id?: number;
+  };
+  players?: {
+    track_id: number;
+    team: string;
+    pitch_x: number;
+    status: string;
+  }[];
+  ai_assessment?: string;
+  evidence?: string;
 }
 
 export interface FrameTrackingMessage {
@@ -77,6 +122,13 @@ export interface FrameTrackingMessage {
   frame: number;
   timestamp: number;
   tracked_items: TrackedItem[];
+  formation?: {
+    team_a?: string;
+    team_b?: string;
+    confidence?: number;
+  };
+  ball?: BallState;
+  offside?: OffsideCandidate;
   inference_time_ms?: number;
   tracking_time_ms?: number;
   total_frames?: number;
