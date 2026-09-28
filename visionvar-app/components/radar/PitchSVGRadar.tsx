@@ -1,7 +1,7 @@
 interface PitchSVGRadarProps {
-  teamADots?: { cx: number; cy: number; active?: boolean }[];
-  teamBDots?: { cx: number; cy: number }[];
-  ballPos?: { cx: number; cy: number };
+  teamADots?: { cx: number; cy: number; active?: boolean; trail?: {cx: number, cy: number}[] }[];
+  teamBDots?: { cx: number; cy: number; trail?: {cx: number, cy: number}[] }[];
+  ballPos?: { cx: number; cy: number; trail?: {cx: number, cy: number}[] };
   defensiveLine?: number;
   height?: string;
 }
@@ -22,7 +22,7 @@ const DEFAULT_TEAM_B = [
 export default function PitchSVGRadar({
   teamADots = DEFAULT_TEAM_A,
   teamBDots = DEFAULT_TEAM_B,
-  ballPos = { cx: 218, cy: 84 },
+  ballPos,
   defensiveLine = 195,
   height = 'h-36',
 }: PitchSVGRadarProps) {
@@ -47,18 +47,53 @@ export default function PitchSVGRadar({
         <line x1={defensiveLine} y1="4" x2={defensiveLine} y2="156" stroke="#ffb4ab" strokeDasharray="3 3" strokeWidth="1.5" />
         {/* Team A (cyan) */}
         {teamADots.map((d, i) => (
-          d.active ? (
-            <circle key={i} cx={d.cx} cy={d.cy} r="4.5" fill="#00daf3" stroke="#ffffff" strokeWidth="1.2" className="animate-pulse" />
-          ) : (
-            <circle key={i} cx={d.cx} cy={d.cy} r="3.5" fill="#00daf3" />
-          )
+          <g key={i}>
+            {d.trail && d.trail.length > 1 && (
+              <polyline 
+                points={d.trail.map(t => `${t.cx},${t.cy}`).join(' ')} 
+                fill="none" 
+                stroke="rgba(0, 218, 243, 0.4)" 
+                strokeWidth="1.5" 
+                strokeDasharray="2,2" 
+              />
+            )}
+            {d.active ? (
+              <circle cx={d.cx} cy={d.cy} r="4.5" fill="#00daf3" stroke="#ffffff" strokeWidth="1.2" className="animate-pulse" />
+            ) : (
+              <circle cx={d.cx} cy={d.cy} r="3.5" fill="#00daf3" />
+            )}
+          </g>
         ))}
         {/* Team B (emerald) */}
         {teamBDots.map((d, i) => (
-          <circle key={i} cx={d.cx} cy={d.cy} r="3.5" fill="#00e479" />
+          <g key={i}>
+            {d.trail && d.trail.length > 1 && (
+              <polyline 
+                points={d.trail.map(t => `${t.cx},${t.cy}`).join(' ')} 
+                fill="none" 
+                stroke="rgba(0, 228, 121, 0.4)" 
+                strokeWidth="1.5" 
+                strokeDasharray="2,2" 
+              />
+            )}
+            <circle cx={d.cx} cy={d.cy} r="3.5" fill="#00e479" />
+          </g>
         ))}
         {/* Ball */}
-        <circle cx={ballPos.cx} cy={ballPos.cy} r="3" fill="#ffffff" className="glow-cyan" />
+        {ballPos && (
+          <g>
+            {ballPos.trail && ballPos.trail.length > 1 && (
+              <polyline 
+                points={ballPos.trail.map(t => `${t.cx},${t.cy}`).join(' ')} 
+                fill="none" 
+                stroke="rgba(255, 255, 255, 0.6)" 
+                strokeWidth="2.0" 
+                strokeDasharray="3,3" 
+              />
+            )}
+            <circle cx={ballPos.cx} cy={ballPos.cy} r="3" fill="#ffffff" className="glow-cyan" />
+          </g>
+        )}
       </svg>
     </div>
   );

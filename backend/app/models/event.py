@@ -25,6 +25,11 @@ class MatchEvent(Base):
     saot_margin_cm = Column(Float, nullable=True)
     ai_explanation = Column(String, nullable=True)
     is_active = Column(Boolean, default=False)
+    
+    # Phase 7A additions
+    status = Column(String, nullable=True, default="candidate")
+    confidence = Column(Float, nullable=True)
+    metadata_json = Column(String, nullable=True)  # Store JSON strings
 
     # Relationship
     match = relationship("Match", back_populates="events")
