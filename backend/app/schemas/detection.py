@@ -77,6 +77,11 @@ class TrackedItem(BaseModel):
     frame: int
     timestamp: float
     state: str = Field(..., description="'tracked', 'lost', or 'reacquired'")
+    team: Optional[str] = Field(None, description="'team_a', 'team_b', or 'unknown'")
+    team_confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    pitch_position: Optional[dict] = Field(None, description="Projected {x, y} on 2D pitch")
+    mapping_status: Optional[str] = Field(None, description="'mapped', 'insufficient_landmarks', 'unstable', or 'unavailable'")
+    movement_trail: Optional[List[tuple]] = Field(None, description="List of (x,y) coords")
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -98,3 +103,4 @@ class WSTrackingFrameMessage(BaseModel):
     duration_seconds: Optional[float] = None
     width: Optional[int] = None
     height: Optional[int] = None
+    formation: Optional[dict] = Field(None, description="Formation estimates per team with confidence")

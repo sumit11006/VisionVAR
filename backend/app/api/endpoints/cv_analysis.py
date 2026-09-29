@@ -21,13 +21,12 @@ def get_formation(match_id: str):
     Returns tactical line and player spatial formation.
     NOTE: Currently returns 'not_implemented' until the CV clustering and pitch homography models are trained and integrated.
     """
-    cv_res = formation_service.detect_formation(match_id=match_id)
     return FormationResponse(
-        status=cv_res.status,
-        module=cv_res.module_name,
+        status="not_implemented",
+        module="FormationService",
         match_id=match_id,
-        message=cv_res.message,
-        data=cv_res.data,
+        message="Not implemented. Tactical shape and team formation classification is currently streamed live via WebSocket, not this REST endpoint.",
+        data={"match_id": match_id}
     )
 
 
