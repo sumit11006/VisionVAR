@@ -18,7 +18,7 @@ import {
   FrameTrackingMessage,
   ProcessingStatusMessage,
 } from '@/lib/api';
-import type { VideoMetadata } from '@/types';
+import type { VideoMetadata, MatchSession } from '@/types';
 
 export default function LiveWorkspacePage() {
   const params = useParams();
@@ -37,7 +37,6 @@ export default function LiveWorkspacePage() {
   // Playback & Frame state
   const [currentFrame, setCurrentFrame] = useState<number>(0);
   const [currentSeconds, setCurrentSeconds] = useState<number>(0.0);
-
   // Live real tracking state
   const [trackedItems, setTrackedItems] = useState<TrackedItem[]>([]);
   const [inferenceMs, setInferenceMs] = useState<number | null>(null);
@@ -45,6 +44,8 @@ export default function LiveWorkspacePage() {
   const [detectionStatus, setDetectionStatus] = useState<string>('IDLE');
   const [progress, setProgress] = useState<number>(0);
   const [isLiveWsConnected, setIsLiveWsConnected] = useState<boolean>(false);
+  const [opticalCalibStatus, setOpticalCalibStatus] = useState<string>('Not available');
+  const [ballStateInfo, setBallStateInfo] = useState<any>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -92,11 +93,18 @@ export default function LiveWorkspacePage() {
       (data) => {
         const type = data.type as string;
         if (type === 'frame_tracking') {
-          const frameMsg = data as unknown as FrameTrackingMessage;
+          const frameMsg = data as unknown as FrameTrackingMessage & { ball?: any };
           setCurrentFrame(frameMsg.frame);
           setTrackedItems(frameMsg.tracked_items || []);
           if (frameMsg.inference_time_ms) {
             setInferenceMs(frameMsg.inference_time_ms);
+          }
+          if (frameMsg.tracked_items && frameMsg.tracked_items.length > 0) {
+            const hasMapped = frameMsg.tracked_items.some((i: any) => i.mapping_status === 'mapped');
+            setOpticalCalibStatus(hasMapped ? 'ACTIVE (Mapped)' : 'UNAVAILABLE');
+          }
+          if (frameMsg.ball) {
+            setBallStateInfo(frameMsg.ball);
           }
           if (frameMsg.tracking_time_ms) {
             setTrackingMs(frameMsg.tracking_time_ms);
@@ -140,7 +148,8 @@ export default function LiveWorkspacePage() {
     return () => {
       ws.close();
     };
-  }, [sessionId, fps]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
 
   const handleStartRealDetection = async () => {
     try {
@@ -161,6 +170,25 @@ export default function LiveWorkspacePage() {
   const avgConfidence = trackedItems.length > 0
     ? (trackedItems.reduce((acc, d) => acc + d.confidence, 0) / trackedItems.length) * 100
     : null;
+
+  // Convert real pitch coordinates to SVG radar coordinates
+  // Pitch is 105x68. SVG bounds are x=2..298 (w=296), y=2..158 (h=156).
+  const pitchToSvgX = (x: number) => 2 + (x / 105) * 296;
+  const pitchToSvgY = (y: number) => 2 + (y / 68) * 156;
+
+  const teamADots = trackedItems
+    .filter((d) => d.class === 'player' && d.team === 'team_a' && d.pitch_position && d.mapping_status === 'mapped')
+    .map((d) => ({ cx: pitchToSvgX(d.pitch_position!.x), cy: pitchToSvgY(d.pitch_position!.y) }));
+
+  const teamBDots = trackedItems
+    .filter((d) => d.class === 'player' && d.team === 'team_b' && d.pitch_position && d.mapping_status === 'mapped')
+    .map((d) => ({ cx: pitchToSvgX(d.pitch_position!.x), cy: pitchToSvgY(d.pitch_position!.y) }));
+
+  const mappedBall = ballItem && ballItem.pitch_position && ballItem.mapping_status === 'mapped'
+    ? { cx: pitchToSvgX(ballItem.pitch_position.x), cy: pitchToSvgY(ballItem.pitch_position.y) }
+    : undefined;
+    
+  const isPitchMapped = trackedItems.some((d) => d.mapping_status === 'mapped');
 
   // Real REC timecode derived strictly from actual video seconds
   const mins = Math.floor(currentSeconds / 60);
@@ -190,24 +218,35 @@ export default function LiveWorkspacePage() {
           }}
         >
           {/* HTML5 Video Element if available, otherwise stylized pitch backdrop */}
-          {videoStreamUrl ? (
-            <video
-              ref={videoRef}
-              src={videoStreamUrl}
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-              muted
-              playsInline
-            />
-          ) : (
-            <div
-              className="absolute inset-0"
+          <div 
+            className="absolute inset-0 m-auto flex items-center justify-center"
+          >
+            <div 
+              className="relative w-full h-full"
               style={{
-                background:
-                  'url(https://images.unsplash.com/photo-1518605368461-1e1e11407559?q=80&w=2070&auto=format&fit=crop) center/cover',
-                opacity: 0.7,
+                aspectRatio: videoWidth > 0 && videoHeight > 0 ? `${videoWidth} / ${videoHeight}` : '16/9',
+                maxHeight: '100%',
+                maxWidth: '100%'
               }}
-            />
-          )}
+            >
+              {videoStreamUrl ? (
+                <video
+                  ref={videoRef}
+                  src={videoStreamUrl}
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  muted
+                  playsInline
+                />
+              ) : (
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'url(https://images.unsplash.com/photo-1518605368461-1e1e11407559?q=80&w=2070&auto=format&fit=crop) center/cover',
+                    opacity: 0.7,
+                  }}
+                />
+              )}
 
           {/* Top-left match identity badge */}
           <div className="absolute top-4 left-4 flex items-center gap-2 z-10">
@@ -224,6 +263,14 @@ export default function LiveWorkspacePage() {
               {sessionData?.competition && (
                 <span className="text-[#849585] font-normal hidden sm:inline">· {sessionData.competition}</span>
               )}
+            </div>
+          </div>
+
+          {/* Team Legend */}
+          <div className="absolute top-4 left-64 flex items-center gap-2 z-10 hidden sm:flex">
+            <div className="px-2.5 py-1 rounded backdrop-blur-md flex gap-4 text-[10px] font-mono" style={{ background: 'rgba(10,14,20,0.85)', border: '1px solid rgba(59,75,61,0.5)', color: '#f1ffef' }}>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-[#00e479] rounded-sm"></div>Team A</div>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-[#00daf3] rounded-sm"></div>Team B</div>
             </div>
           </div>
 
@@ -288,13 +335,26 @@ export default function LiveWorkspacePage() {
                     }}
                   >
                     <div
-                      className="absolute -top-5 left-0 text-[9px] px-1 font-mono font-bold whitespace-nowrap"
-                      style={{
-                        background: isBall ? '#ffd700' : '#00e479',
-                        color: '#0a0e14',
-                      }}
+                      className="absolute -top-1 left-0 -translate-y-full flex flex-col text-[9px] font-mono font-bold whitespace-nowrap"
                     >
-                      {isBall ? `BALL [${confPct}%]` : `#${det.track_id} PLAYER [${confPct}%]`}
+                      <div className="px-1" style={{ background: isBall ? '#ffd700' : '#00e479', color: '#0a0e14' }}>
+                        {isBall ? 'BALL' : `#${det.track_id} PLAYER`}
+                      </div>
+                      {!isBall && det.team && (
+                        <>
+                          <div className="px-1 mt-[1px]" style={{ background: 'rgba(10,14,20,0.8)', color: '#fff', border: '1px solid #00e479' }}>
+                            TEAM {det.team === 'team_a' ? 'A' : det.team === 'team_b' ? 'B' : 'UNKNOWN'}
+                          </div>
+                          {det.team !== 'unknown' && det.team_confidence && (
+                            <div className="px-1 mt-[1px]" style={{ background: 'rgba(10,14,20,0.8)', color: '#fff', border: '1px solid #00e479' }}>
+                              TEAM CONF {Math.round(det.team_confidence * 100)}%
+                            </div>
+                          )}
+                        </>
+                      )}
+                      <div className="px-1 mt-[1px]" style={{ background: 'rgba(10,14,20,0.8)', color: '#fff', border: isBall ? '1px solid #ffd700' : '1px solid #00e479' }}>
+                        DET {confPct}%
+                      </div>
                     </div>
                   </div>
                 );
@@ -348,6 +408,8 @@ export default function LiveWorkspacePage() {
               </div>
             ) : null}
           </div>
+          </div>
+          </div>
 
           {/* Bottom HUD bar within video */}
           <div
@@ -397,10 +459,10 @@ export default function LiveWorkspacePage() {
               <span className="text-[9px] font-mono text-[#849585]">2D RADAR</span>
             </div>
             <div className="flex-1 relative">
-              <PitchSVGRadar teamADots={[]} teamBDots={[]} height="h-full" />
+              <PitchSVGRadar teamADots={teamADots} teamBDots={teamBDots} ballPos={mappedBall} height="h-full" />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <span className="px-2 py-1 rounded text-[9px] font-mono bg-[rgba(10,14,20,0.75)] text-[#849585] border border-[rgba(59,75,61,0.4)]">
-                  Radar mapping: Pending tracking
+                  {isPitchMapped ? 'Pitch mapping: Active' : 'Radar mapping: Pending tracking'}
                 </span>
               </div>
             </div>
@@ -441,21 +503,21 @@ export default function LiveWorkspacePage() {
                 value={inferenceMs !== null ? `${inferenceMs.toFixed(1)}ms` : 'Standby'}
                 valueColor={inferenceMs !== null ? '#00daf3' : '#849585'}
               />
-              <TelemetryChip label="Optical Calib" value="Not available" />
+              <TelemetryChip label="Optical Calib" value={opticalCalibStatus} valueColor={opticalCalibStatus.includes('ACTIVE') ? '#00daf3' : '#f59e0b'} />
             </div>
             <div className="flex flex-col gap-3 border-r pr-3" style={{ borderColor: 'rgba(59,75,61,0.3)' }}>
               <TelemetryChip
                 label="Ball Visibility"
                 value={
                   detectionStatus === 'PROCESSING' || trackedItems.length > 0
-                    ? ballItem
-                      ? `LOCKED (${Math.round(ballItem.confidence * 100)}%)`
+                    ? ballStateInfo && (ballStateInfo.state === 'tracked' || ballStateInfo.state === 'reacquired')
+                      ? `LOCKED (${Math.round((ballStateInfo.confidence || 0) * 100)}%)`
                       : 'NOT DETECTED'
                     : 'Pending analysis'
                 }
-                valueColor={ballItem ? '#00e479' : '#f59e0b'}
+                valueColor={ballStateInfo && (ballStateInfo.state === 'tracked' || ballStateInfo.state === 'reacquired') ? '#00e479' : '#f59e0b'}
               />
-              <TelemetryChip label="Ball Velocity" value="Not available" />
+              <TelemetryChip label="Ball Velocity" value="Available in Timeline" />
             </div>
             <div className="flex flex-col gap-3 justify-center h-full">
               <button
