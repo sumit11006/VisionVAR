@@ -1,11 +1,44 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import AppShell from '@/components/layout/AppShell';
 import BentoCard from '@/components/ui/BentoCard';
 import StatusBadge from '@/components/ui/StatusBadge';
-import { mockOffsideIncident } from '@/lib/mockData/offsideIncident';
+import { connectAnalysisWebSocket, FrameTrackingMessage, OffsideCandidate } from '@/lib/api';
 
 export default function OffsideReviewPage() {
-  const inc = mockOffsideIncident;
-  const isOffside = inc.aiEstimation === 'OFFSIDE';
+  const params = useParams();
+  const sessionId = (params?.id as string) || 'UCL-2024-MCI-RMA-F';
+
+  const [candidate, setCandidate] = useState<OffsideCandidate | null>(null);
+  const [frameId, setFrameId] = useState<number>(0);
+  const [timestamp, setTimestamp] = useState<number>(0);
+
+  useEffect(() => {
+    const ws = connectAnalysisWebSocket(
+      sessionId,
+      (data) => {
+        if (data.type === 'frame_tracking') {
+          const msg = data as unknown as FrameTrackingMessage;
+          if (msg.offside && msg.offside.status === 'candidate') {
+            setCandidate(msg.offside);
+            setFrameId(msg.frame);
+            setTimestamp(msg.timestamp);
+          }
+        }
+      }
+    );
+
+    return () => {
+      ws.close();
+    };
+  }, [sessionId]);
+
+  const hasEvidence = candidate?.status === 'candidate' && candidate.ai_assessment !== 'INSUFFICIENT EVIDENCE';
+  const isOffside = candidate?.ai_assessment === 'POTENTIAL OFFSIDE';
+  
+  const statusLabel = candidate?.ai_assessment || 'WAITING FOR DATA';
 
   return (
     <AppShell fullHeight>
@@ -16,67 +49,22 @@ export default function OffsideReviewPage() {
         {/* Video pane (Left) */}
         <div className="flex-1 relative rounded-lg overflow-hidden border flex flex-col justify-between" style={{ borderColor: isOffside ? 'rgba(255,51,102,0.4)' : 'rgba(0,218,243,0.4)' }}>
           {/* Main frame */}
-          <div className="absolute inset-0 z-0 bg-black">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop" alt="Pitch frame" className="w-full h-full object-cover opacity-60 grayscale" />
-          </div>
-
-          {/* SAOT laser planes */}
-          <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden perspective-1000">
-            {/* Attacker plane */}
-            <div
-              className={`absolute top-0 bottom-0 w-1 ${isOffside ? 'laser-plane-red' : 'laser-plane-cyan'} z-20`}
-              style={{ left: '42%', transform: 'rotateY(45deg)', transformOrigin: 'left' }}
-            >
-              <div className="absolute -top-6 -left-12 px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest text-[#0a0e14] whitespace-nowrap" style={{ background: isOffside ? '#ff3366' : '#00daf3' }}>
-                ATT: {inc.attacker.axisMeters}m
-              </div>
-            </div>
-            {/* Defender plane */}
-            <div
-              className="absolute top-0 bottom-0 w-1 bg-gradient-to-b from-[rgba(0,228,121,0.5)] to-transparent z-10 laser-line-green"
-              style={{ left: '45%', transform: 'rotateY(45deg)', transformOrigin: 'left' }}
-            >
-               <div className="absolute -bottom-6 -left-12 px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest text-[#0a0e14] whitespace-nowrap bg-[#00e479]">
-                DEF: {inc.defender.axisMeters}m
-              </div>
-            </div>
+          <div className="absolute inset-0 z-0 bg-black flex items-center justify-center">
+            <span className="text-[#849585] text-lg font-mono">
+              {candidate ? `Candidate Frame: ${frameId}` : "Waiting for candidate frame..."}
+            </span>
           </div>
 
           {/* Top HUD */}
           <div className="relative z-20 p-4 flex justify-between items-start">
              <div className="px-3 py-1.5 rounded-lg backdrop-blur-md border flex items-center gap-2" style={{ background: 'rgba(10,14,20,0.85)', borderColor: 'rgba(59,75,61,0.5)' }}>
-               <span className="text-[#849585] text-label-sm font-label-sm">INCIDENT ID:</span>
-               <span className="text-[#dfe2eb] text-label-md font-label-md font-mono">{inc.incidentId}</span>
+               <span className="text-[#849585] text-label-sm font-label-sm">AI ASSESSMENT:</span>
+               <span className="text-[#dfe2eb] text-label-md font-label-md font-mono">FRAME {frameId}</span>
              </div>
              <div className="flex flex-col gap-2 items-end">
-               <StatusBadge label={inc.aiEstimation} color={isOffside ? 'crimson' : 'cyan'} pulse ping />
-               <div className="px-2 py-1 rounded text-label-sm font-label-sm text-[#f1ffef]" style={{ background: 'rgba(10,14,20,0.85)', border: '1px solid rgba(59,75,61,0.5)' }}>
-                 MARGIN: <span style={{ color: isOffside ? '#ffb4ab' : '#00daf3', fontWeight: 'bold' }}>{inc.marginMeters * 100}cm</span>
-               </div>
-             </div>
-          </div>
-
-          {/* Bottom Frame Stepper HUD */}
-          <div className="relative z-20 p-4 w-full mt-auto bg-gradient-to-t from-[rgba(10,14,20,0.9)] to-transparent">
-             <div className="flex justify-center gap-1">
-               {/* Filmstrip mock */}
-               {[-2, -1, 0, 1, 2].map((offset, i) => (
-                 <div
-                   key={i}
-                   className="w-24 h-16 rounded overflow-hidden relative cursor-pointer transition-all hover:scale-105"
-                   style={{
-                     border: offset === 0 ? `2px solid ${isOffside ? '#ff3366' : '#00daf3'}` : '1px solid rgba(59,75,61,0.5)',
-                     opacity: offset === 0 ? 1 : 0.6
-                   }}
-                 >
-                   <div className="absolute inset-0 bg-[#262a31]" />
-                   <div className="absolute bottom-0 w-full text-center text-[9px] font-mono font-bold bg-[rgba(10,14,20,0.8)] text-[#b9cbb9]">
-                     F{inc.frameId + offset}
-                     {offset === 0 && <span style={{ color: isOffside ? '#ff3366' : '#00daf3' }}> (LOCK)</span>}
-                   </div>
-                 </div>
-               ))}
+               {candidate && (
+                 <StatusBadge label={statusLabel} color={isOffside ? 'crimson' : (hasEvidence ? 'cyan' : 'amber')} pulse ping />
+               )}
              </div>
           </div>
         </div>
@@ -86,73 +74,55 @@ export default function OffsideReviewPage() {
           {/* Header Action */}
           <div className="flex justify-end gap-2">
             <button className="px-4 py-2 rounded text-label-md font-label-md font-bold hover:brightness-110 active:scale-95" style={{ background: '#262a31', color: '#b9cbb9', border: '1px solid rgba(59,75,61,0.4)' }}>
-              OVERRIDE PITCH
-            </button>
-            <button className="px-4 py-2 rounded text-label-md font-label-md font-bold hover:brightness-110 active:scale-95" style={{ background: '#00e479', color: '#003919' }}>
-              CONFIRM FRAME
+              REVIEW
             </button>
           </div>
 
-          {/* Telemetry Summary */}
-          <BentoCard title="SAOT Evaluation" icon="architecture" glowColor={isOffside ? 'none' : 'cyan'}>
-             <div className="grid grid-cols-2 gap-2 mt-2">
-                <div className="p-2 rounded bg-[#0a0e14] border border-[#3b4b3d]">
-                  <div className="text-[10px] text-[#849585]">ATTACKER</div>
-                  <div className="font-mono text-sm text-[#dfe2eb]">{inc.attacker.axisMeters}m</div>
-                  <div className="text-[10px] text-[#00daf3] mt-1">{inc.attacker.bodyPartDatum}</div>
-                </div>
-                <div className="p-2 rounded bg-[#0a0e14] border border-[#3b4b3d]">
-                  <div className="text-[10px] text-[#849585]">DEFENDER</div>
-                  <div className="font-mono text-sm text-[#dfe2eb]">{inc.defender.axisMeters}m</div>
-                  <div className="text-[10px] text-[#00e479] mt-1">{inc.defender.bodyPartDatum}</div>
-                </div>
-             </div>
-             <div className="mt-3 p-2 rounded flex items-center justify-between font-mono" style={{ background: isOffside ? 'rgba(147,0,10,0.3)' : 'rgba(0,218,243,0.1)', border: `1px solid ${isOffside ? 'rgba(255,180,171,0.4)' : 'rgba(0,218,243,0.4)'}` }}>
-               <span className="text-[11px]" style={{ color: isOffside ? '#ffdad6' : '#00daf3' }}>DELTA / MARGIN</span>
-               <span className="font-bold text-sm" style={{ color: isOffside ? '#ffb4ab' : '#00daf3' }}>{inc.marginMeters * 100}cm</span>
+          <BentoCard title="AI OFFSIDE ANALYSIS" icon="architecture" glowColor={isOffside ? 'none' : 'cyan'}>
+             <div className="space-y-3 mt-2 font-mono text-sm">
+                <div className="flex justify-between text-[#b9cbb9]"><span>AI Assessment</span><span style={{ color: isOffside ? '#ffb4ab' : '#00daf3' }}>{statusLabel}</span></div>
+                <div className="flex justify-between text-[#b9cbb9]"><span>Evidence</span><span className="text-[#dfe2eb]">{candidate?.evidence || 'Waiting'}</span></div>
              </div>
           </BentoCard>
 
-          {/* Attacker Details */}
-          <BentoCard title="Attacker Kinematics" icon="sprint">
-             <div className="space-y-3 mt-2">
-               <div className="flex justify-between items-center text-sm">
-                 <span className="text-[#849585]">Player</span>
-                 <span className="font-bold text-[#f1ffef]">{inc.attacker.jersey} {inc.attacker.name}</span>
-               </div>
-               <div className="flex justify-between items-center text-sm">
-                 <span className="text-[#849585]">Velocity</span>
-                 <span className="font-mono text-[#dfe2eb]">{inc.attacker.velocityKph} km/h</span>
-               </div>
-               <div className="flex justify-between items-center text-sm">
-                 <span className="text-[#849585]">Acceleration</span>
-                 <span className="font-mono text-[#dfe2eb]">{inc.attacker.accelerationMs2} m/s²</span>
-               </div>
-               <div className="flex justify-between items-center text-sm">
-                 <span className="text-[#849585]">Body Lean Angle</span>
-                 <span className="font-mono text-[#00daf3]">{inc.attacker.bodyLeanAngle}°</span>
-               </div>
-             </div>
-          </BentoCard>
-
-          {/* Ball Contact */}
-          <BentoCard title="Kick Point Sync" icon="sports_soccer">
+          <BentoCard title="Ball Contact" icon="sports_soccer">
              <div className="space-y-3 mt-2">
                <div className="flex justify-between items-center text-sm">
                  <span className="text-[#849585]">Frame ID</span>
-                 <span className="font-mono text-[#dfe2eb]">#{inc.ballContact.frameId}</span>
+                 <span className="font-mono text-[#dfe2eb]">#{frameId}</span>
                </div>
                <div className="flex justify-between items-center text-sm">
-                 <span className="text-[#849585]">Timecode</span>
-                 <span className="font-mono text-[#dfe2eb]">{inc.ballContact.timecode}</span>
+                 <span className="text-[#849585]">Timestamp</span>
+                 <span className="font-mono text-[#dfe2eb]">{timestamp.toFixed(2)}s</span>
                </div>
                <div className="flex justify-between items-center text-sm">
-                 <span className="text-[#849585]">Ball Speed</span>
-                 <span className="font-mono text-[#00e479]">{inc.ballContact.ballSpeedKph} km/h</span>
+                 <span className="text-[#849585]">State</span>
+                 <span className="font-mono text-[#00daf3]">{candidate?.ball_contact?.state || 'Unknown'}</span>
                </div>
-               <div className="flex items-center gap-2 mt-2 p-1.5 rounded bg-[rgba(0,228,121,0.1)] border border-[rgba(0,228,121,0.3)]">
-                  <span className="material-symbols-outlined text-[14px] text-[#00e479]">verified</span>
-                  <span className="text-[11px] text-[#00e479] font-bold">CONTACT CONFIRMED</span>
+               <div className="flex justify-between items-center text-sm">
+                 <span className="text-[#849585]">Confidence</span>
+                 <span className="font-mono text-[#dfe2eb]">{candidate?.ball_contact?.confidence ? `${Math.round(candidate.ball_contact.confidence * 100)}%` : '0%'}</span>
+               </div>
+             </div>
+          </BentoCard>
+          
+          <BentoCard title="Offside Geometry" icon="straighten">
+             <div className="space-y-3 mt-2">
+               <div className="flex justify-between items-center text-sm">
+                 <span className="text-[#849585]">Attacking Dir (A)</span>
+                 <span className="font-mono text-[#dfe2eb]">{candidate?.team_a_attacking_dir || 'unknown'}</span>
+               </div>
+               <div className="flex justify-between items-center text-sm">
+                 <span className="text-[#849585]">Def Line (vs A)</span>
+                 <span className="font-mono text-[#dfe2eb]">{candidate?.offside_line_against_a?.status === 'available' ? `${candidate.offside_line_against_a.x.toFixed(1)}m (Player #${candidate.offside_line_against_a.defender_id})` : 'unavailable'}</span>
+               </div>
+               <div className="flex justify-between items-center text-sm">
+                 <span className="text-[#849585]">Attacking Dir (B)</span>
+                 <span className="font-mono text-[#dfe2eb]">{candidate?.team_b_attacking_dir || 'unknown'}</span>
+               </div>
+               <div className="flex justify-between items-center text-sm">
+                 <span className="text-[#849585]">Def Line (vs B)</span>
+                 <span className="font-mono text-[#dfe2eb]">{candidate?.offside_line_against_b?.status === 'available' ? `${candidate.offside_line_against_b.x.toFixed(1)}m (Player #${candidate.offside_line_against_b.defender_id})` : 'unavailable'}</span>
                </div>
              </div>
           </BentoCard>
