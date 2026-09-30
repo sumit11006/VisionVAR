@@ -12,3 +12,20 @@ models/*.pt
 backend/models/
 data/uploads/
 .DS_Store
+
+# Artifacts
+*.pt
+*.json
+!package.json
+!tsconfig.json
+!visionvar-app/*.json
+data/sessions/
+benchmark_*.py
+test_*.py
+!backend/tests/test_*.py
+append_*.py
+analyze_*.py
+validate_*.py
+update_*.py
+*.txt
+!requirements.txt
