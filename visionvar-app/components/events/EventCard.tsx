@@ -10,6 +10,12 @@ const typeConfig: Record<string, { bg: string; border: string; text: string; ico
   HIGH_DANGER_FOUL: { bg: 'rgba(147,0,10,0.25)', border: 'rgba(255,180,171,0.35)', text: '#ffb4ab', icon: 'warning', label: 'HIGH-DANGER FOUL' },
   SUBSTITUTION:     { bg: 'rgba(59,75,61,0.3)', border: 'rgba(59,75,61,0.5)', text: '#b9cbb9', icon: 'swap_horiz', label: 'SUBSTITUTION' },
   VAR_INTERVENTION: { bg: 'rgba(0,228,121,0.1)', border: 'rgba(0,228,121,0.4)', text: '#00e479', icon: 'live_tv', label: 'VAR INTERVENTION' },
+  BALL_CONTACT:     { bg: 'rgba(0,218,243,0.1)', border: 'rgba(0,218,243,0.3)', text: '#00daf3', icon: 'sports_soccer', label: 'BALL CONTACT' },
+  PASS_CANDIDATE:   { bg: 'rgba(192,193,255,0.1)', border: 'rgba(192,193,255,0.3)', text: '#c0c1ff', icon: 'arrow_forward', label: 'PASS CANDIDATE' },
+  POSSESSION_CANDIDATE: { bg: 'rgba(250,204,21,0.1)', border: 'rgba(250,204,21,0.3)', text: '#facc15', icon: 'timelapse', label: 'POSSESSION' },
+  BALL_RECOVERY_CANDIDATE: { bg: 'rgba(0,228,121,0.1)', border: 'rgba(0,228,121,0.3)', text: '#00e479', icon: 'replay', label: 'RECOVERY' },
+  TURNOVER_CANDIDATE: { bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)', text: '#f59e0b', icon: 'sync_problem', label: 'TURNOVER' },
+  OFFSIDE_CANDIDATE: { bg: 'rgba(0,218,243,0.1)', border: 'rgba(0,218,243,0.4)', text: '#00daf3', icon: 'flag', label: 'POTENTIAL OFFSIDE' },
 };
 
 const verdictStyle = (verdict: string | null) => {
@@ -52,13 +58,15 @@ export default function EventCard({ event, isActive }: EventCardProps) {
             {cfg.label}
           </span>
         </div>
-        {/* AI Verdict */}
-        {vStyle && (
+        </div>
+        {/* AI Verdict / Status */}
+        {(vStyle || event.status) && (
           <span
             className="px-2 py-0.5 rounded text-label-sm font-label-sm font-bold tracking-wider flex items-center gap-1 shrink-0 whitespace-nowrap"
-            style={{ background: vStyle.bg, border: vStyle.border, color: vStyle.color }}
+            style={vStyle ? { background: vStyle.bg, border: vStyle.border, color: vStyle.color } : { background: 'rgba(28,32,38,0.8)', border: '1px solid rgba(59,75,61,0.5)', color: '#b9cbb9' }}
           >
-            {event.aiVerdict}
+            {event.aiVerdict || event.status?.toUpperCase()}
+            {event.confidence && <span className="ml-1 opacity-70">({Math.round(event.confidence * 100)}%)</span>}
           </span>
         )}
       </div>
@@ -132,6 +140,18 @@ export default function EventCard({ event, isActive }: EventCardProps) {
             <strong style={{ color: '#00e479' }}>AI Explanation: </strong>
             {event.aiExplanation}
           </div>
+        </div>
+      )}
+
+      {/* Metadata JSON */}
+      {event.metadata_json && (
+        <div
+          className="mt-1 rounded p-2 text-[10px] font-mono flex items-start gap-2"
+          style={{ background: 'rgba(10,14,20,0.5)', border: '1px solid rgba(59,75,61,0.2)', color: '#849585' }}
+        >
+          <pre className="whitespace-pre-wrap m-0">
+            {event.metadata_json}
+          </pre>
         </div>
       )}
     </div>

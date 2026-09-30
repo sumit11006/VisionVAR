@@ -98,7 +98,14 @@ export type EventType =
   | 'HIGH_DANGER_FOUL'
   | 'SUBSTITUTION'
   | 'GOAL_UNDER_REVIEW'
-  | 'VAR_INTERVENTION';
+  | 'VAR_INTERVENTION'
+  | 'BALL_CONTACT'
+  | 'PASS_CANDIDATE'
+  | 'POSSESSION_CANDIDATE'
+  | 'BALL_RECOVERY_CANDIDATE'
+  | 'TURNOVER_CANDIDATE'
+  | 'OFFSIDE_CANDIDATE'
+  | string;
 
 export interface MatchEvent {
   id: string;
@@ -119,6 +126,9 @@ export interface MatchEvent {
   saotMarginCm?: number;
   aiExplanation?: string;
   isActive?: boolean;
+  status?: string;
+  confidence?: number;
+  metadata_json?: string;
 }
 
 // ─── Players ────────────────────────────────────────────────────────────────────
