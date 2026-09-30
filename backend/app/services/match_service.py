@@ -64,6 +64,9 @@ class MatchService:
                 saotMarginCm=e.saot_margin_cm,
                 aiExplanation=e.ai_explanation,
                 isActive=e.is_active,
+                status=e.status,
+                confidence=e.confidence,
+                metadata_json=e.metadata_json,
             )
             for e in events
         ]
