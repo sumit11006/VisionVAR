@@ -13,7 +13,14 @@ from backend.app.websocket.manager import ws_manager
 from backend.cv.video_processor import VideoProcessor, VideoProcessingError
 from backend.cv.detection.service import DetectionService, DetectionError
 from backend.cv.tracking.tracking_service import TrackingService
-
+from backend.cv.team.service import TeamClassificationService
+from backend.cv.pitch.service import PitchMappingService
+from backend.cv.formation.service import FormationService
+from backend.cv.ball.service import BallTrackingService
+from backend.cv.events.ball_contact import BallContactService
+from backend.cv.offside.service import OffsideAnalysisService
+from backend.cv.events.service import EventDetectionService
+from backend.app.models.event import MatchEvent
 
 async def run_detection_pipeline(
     session_id: str,
@@ -68,6 +75,13 @@ async def run_detection_pipeline(
         # 3. Initialize VideoProcessor & DetectionService & TrackingService
         detector = DetectionService(confidence_threshold=conf_threshold)
         tracker = TrackingService()
+        ball_tracker = BallTrackingService()
+        team_classifier = TeamClassificationService()
+        pitch_mapper = PitchMappingService()
+        formation_analyzer = FormationService()
+        ball_contact_analyzer = BallContactService()
+        offside_analyzer = OffsideAnalysisService()
+        event_detector = EventDetectionService()
 
         with VideoProcessor(video.file_path) as vp:
             total_frames = vp.total_frames
@@ -132,27 +146,135 @@ async def run_detection_pipeline(
                 
                 # Tracking
                 t1 = time.time()
-                tracked_items = tracker.update(frame_result.detections, frame_idx, timestamp)
+                player_detections = [d for d in frame_result.detections if d.class_name == "player"]
+                ball_detections = [d for d in frame_result.detections if d.class_name == "ball"]
+                
+                tracked_items = tracker.update(player_detections, frame_idx, timestamp)
+                ball_state = ball_tracker.update(ball_detections, frame_idx, timestamp)
+                
+                # Team Classification
+                tracked_items = team_classifier.process_tracked_items(tracked_items, frame_bgr)
+                
+                # Pitch Mapping
+                pitch_status = pitch_mapper.calibrate(frame_bgr)
+                if pitch_status == "mapped":
+                    for item in tracked_items:
+                        if item.class_name == "player":
+                            # BBox is pydantic object, pass as dict or object
+                            pitch_pos = pitch_mapper.project_player(item.bbox.model_dump())
+                            if pitch_pos:
+                                item.pitch_position = pitch_pos
+                                item.mapping_status = "mapped"
+                            else:
+                                item.mapping_status = "out_of_bounds"
+                                
+                    # Map the ball
+                    if ball_state and ball_state.get("bbox"):
+                        # Format bbox for project_player
+                        ball_bbox_dict = {
+                            "x1": ball_state["bbox"][0],
+                            "y1": ball_state["bbox"][1],
+                            "x2": ball_state["bbox"][2],
+                            "y2": ball_state["bbox"][3]
+                        }
+                        ball_pitch_pos = pitch_mapper.project_player(ball_bbox_dict)
+                        if ball_pitch_pos:
+                            ball_state = ball_tracker.update_pitch_position(ball_state, (ball_pitch_pos["x"], ball_pitch_pos["y"]))
+                            
+                    if ball_state:
+                        ball_state["movement_trail"] = ball_tracker.get_trajectory()
+                else:
+                    for item in tracked_items:
+                        item.mapping_status = pitch_status
+                        
+                # Formation Analysis
+                formation_result = formation_analyzer.process_frame(tracked_items)
+                
+                # Phase 6B: Events and Offside Candidate Analysis
+                ball_contact_event = ball_contact_analyzer.process_frame(ball_state, frame_idx, timestamp)
+                
+                offside_candidate = None
+                if ball_contact_event.get("state") == "possible":
+                    offside_candidate = offside_analyzer.analyze(
+                        ball_contact=ball_contact_event,
+                        tracked_items=tracked_items,
+                        timestamp=timestamp,
+                        frame=frame_idx
+                    )
+                
                 tracking_ms = round((time.time() - t1) * 1000, 1)
 
                 # Stream frame detection over WebSocket
-                await ws_manager.broadcast_to_session(
-                    session_id,
-                    {
-                        "type": "frame_tracking",
-                        "session_id": session_id,
-                        "frame": frame_idx,
-                        "total_frames": total_frames,
-                        "fps": fps,
-                        "duration_seconds": vp.duration_seconds,
-                        "width": vp.width,
-                        "height": vp.height,
-                        "timestamp": timestamp,
-                        "inference_time_ms": inference_ms,
-                        "tracking_time_ms": tracking_ms,
-                        "tracked_items": [t.model_dump(by_alias=True) for t in tracked_items],
-                    },
+                # Need to add movement_trail safely since it's a dynamic attribute
+                dumped_items = []
+                for t in tracked_items:
+                    d = t.model_dump(by_alias=True)
+                    if hasattr(t, 'movement_trail'):
+                        d['movement_trail'] = t.movement_trail
+                    dumped_items.append(d)
+
+                payload = {
+                    "type": "frame_tracking",
+                    "session_id": session_id,
+                    "frame": frame_idx,
+                    "total_frames": total_frames,
+                    "fps": fps,
+                    "duration_seconds": vp.duration_seconds,
+                    "width": vp.width,
+                    "height": vp.height,
+                    "timestamp": timestamp,
+                    "inference_time_ms": inference_ms,
+                    "tracking_time_ms": tracking_ms,
+                    "tracked_items": dumped_items,
+                    "formation": formation_result,
+                    "ball": ball_state
+                }
+                
+                if offside_candidate:
+                    payload["offside"] = offside_candidate
+
+                await ws_manager.broadcast_to_session(session_id, payload)
+                
+                # Phase 7A: Event Generation
+                detected_events = event_detector.process(
+                    frame_idx=frame_idx,
+                    timestamp=timestamp,
+                    session_id=session_id,
+                    match_id=session.match_id,
+                    tracked_items=tracked_items,
+                    ball_state=ball_state,
+                    ball_contact_event=ball_contact_event,
+                    offside_candidate=offside_candidate
                 )
+                
+                for ev in detected_events:
+                    # Save to DB
+                    db_event = MatchEvent(
+                        id=ev["id"],
+                        match_id=ev["match_id"],
+                        minute=int(ev["timestamp"] // 60),
+                        second=int(ev["timestamp"] % 60),
+                        frame_id=ev["frame"],
+                        type=ev["event_type"],
+                        team=ev["team"],
+                        player=ev["player"],
+                        status=ev["status"],
+                        confidence=ev["confidence"],
+                        metadata_json=json.dumps(ev["metadata"]) if ev.get("metadata") else None
+                    )
+                    db.add(db_event)
+                    
+                    # Broadcast event over WebSocket
+                    await ws_manager.broadcast_to_session(
+                        session_id,
+                        {
+                            "type": "event_detected",
+                            "session_id": session_id,
+                            "event": ev
+                        }
+                    )
+                
+                db.commit()
 
                 # Periodic status update every 5 processed frames
                 if processed_count % 5 == 0:

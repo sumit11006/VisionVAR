@@ -17,6 +17,7 @@ export default function TimelinePage() {
   const activeEventId = 'EVT-010';
 
   useEffect(() => {
+    // 1. Fetch historical events from SQLite
     fetchMatchEvents(matchId)
       .then((data) => {
         if (data && data.length > 0) {
@@ -24,9 +25,53 @@ export default function TimelinePage() {
         }
       })
       .catch(() => {
-        // Fallback to mockEvents
+        // Fallback to mockEvents if failed
       });
   }, [matchId]);
+
+  useEffect(() => {
+    // 2. Connect WebSocket to stream live AI events (Phase 7A)
+    const sessionId = (params?.id as string) || 'default';
+    if (sessionId) {
+      const ws = new WebSocket(`ws://localhost:8000/ws/analysis/${sessionId}`);
+      
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'event_detected' && data.event) {
+            setEvents(prev => {
+              // Deduplicate if already exists (sometimes REST returns it just before WS does)
+              if (prev.find(e => e.id === data.event.id)) return prev;
+              
+              const newEvent: MatchEvent = {
+                id: data.event.id || data.event.id,
+                minute: Math.floor(data.event.timestamp / 60) || 0,
+                second: Math.floor(data.event.timestamp % 60) || 0,
+                frameId: data.event.frame || 0,
+                timecode: '00:00:00:00',
+                type: data.event.event_type as EventType,
+                team: data.event.team || 'unknown',
+                player: data.event.player,
+                status: data.event.status,
+                confidence: data.event.confidence,
+                metadata_json: data.event.metadata ? JSON.stringify(data.event.metadata, null, 2) : undefined,
+                aiVerdict: data.event.status,
+              };
+              
+              // Add and sort by time
+              return [...prev, newEvent].sort((a, b) => 
+                (a.minute * 60 + a.second) - (b.minute * 60 + b.second)
+              );
+            });
+          }
+        } catch (e) {
+          // ignore parsing error
+        }
+      };
+
+      return () => ws.close();
+    }
+  }, [params?.id]);
 
   return (
     <AppShell fullHeight>
