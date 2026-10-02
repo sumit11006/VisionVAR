@@ -15,6 +15,8 @@ async def analysis_websocket_endpoint(websocket: WebSocket, session_id: str):
             "message": f"Connected to VisionVAR live analysis stream for session '{session_id}'.",
             "telemetry_rate_hz": 10,
         })
+        
+
 
         while True:
             # Wait for messages from client (e.g. ping, scrub, play)

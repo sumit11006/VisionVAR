@@ -20,6 +20,12 @@ from backend.cv.ball.service import BallTrackingService
 from backend.cv.events.ball_contact import BallContactService
 from backend.cv.offside.service import OffsideAnalysisService
 from backend.cv.events.service import EventDetectionService
+from backend.cv.events.pass_detection import PassDetectionService
+from backend.cv.events.shot_detection import ShotDetectionService
+from backend.cv.events.goal_detection import GoalDetectionService
+from backend.cv.events.possession import PossessionService
+from backend.cv.analytics.player_analytics import PlayerAnalyticsService
+from backend.cv.analytics.match_summary import MatchSummaryService
 from backend.app.models.event import MatchEvent
 
 async def run_detection_pipeline(
@@ -82,10 +88,16 @@ async def run_detection_pipeline(
         ball_contact_analyzer = BallContactService()
         offside_analyzer = OffsideAnalysisService()
         event_detector = EventDetectionService()
-
+        pass_detector = PassDetectionService()
+        shot_detector = ShotDetectionService()
+        goal_detector = GoalDetectionService()
+        possession_tracker = PossessionService(distance_threshold_m=2.5, firm_possession_frames=5)
         with VideoProcessor(video.file_path) as vp:
             total_frames = vp.total_frames
             fps = vp.fps
+            
+            # Phase 7F: Player Analytics
+            player_analytics = PlayerAnalyticsService(fps=fps)
 
             # Update video metadata if not populated
             if not video.fps or video.fps <= 0 or not video.total_frames:
@@ -115,6 +127,7 @@ async def run_detection_pipeline(
             )
 
             detection_records = []
+            tracking_records = []
             processed_count = 0
             start_time = time.time()
 
@@ -233,6 +246,15 @@ async def run_detection_pipeline(
                 if offside_candidate:
                     payload["offside"] = offside_candidate
 
+                tracking_records.append({
+                    "frame_number": frame_idx,
+                    "timestamp": timestamp,
+                    "tracked_items": dumped_items,
+                    "ball_state": ball_state,
+                    "formation": formation_result,
+                    "pitch_mapping_status": pitch_status
+                })
+
                 await ws_manager.broadcast_to_session(session_id, payload)
                 
                 # Phase 7A: Event Generation
@@ -246,6 +268,79 @@ async def run_detection_pipeline(
                     ball_contact_event=ball_contact_event,
                     offside_candidate=offside_candidate
                 )
+                
+                # Phase 7B: Pass Detection
+                pass_events = pass_detector.process(
+                    frame_idx=frame_idx,
+                    timestamp=timestamp,
+                    session_id=session_id,
+                    match_id=session.match_id,
+                    tracked_items=tracked_items,
+                    ball_state=ball_state,
+                    ball_contact_event=ball_contact_event
+                )
+                detected_events.extend(pass_events)
+                
+                # Phase 7C: Shot Detection
+                shot_events = shot_detector.process(
+                    frame_idx=frame_idx,
+                    timestamp=timestamp,
+                    session_id=session_id,
+                    match_id=session.match_id,
+                    tracked_items=tracked_items,
+                    ball_state=ball_state,
+                    ball_contact_event=ball_contact_event
+                )
+                
+                # Phase 7D: Goal Detection
+                attacking_directions = {
+                    "team_a": shot_detector.determine_attacking_direction("team_a", tracked_items),
+                    "team_b": shot_detector.determine_attacking_direction("team_b", tracked_items)
+                }
+                
+                goal_events = goal_detector.process(
+                    frame_idx=frame_idx,
+                    timestamp=timestamp,
+                    session_id=session_id,
+                    match_id=session.match_id,
+                    ball_state=ball_state,
+                    attacking_directions=attacking_directions,
+                    active_shots=[shot_detector.active_shot] if shot_detector.active_shot else None
+                )
+                
+                # Shot/Pass separation logic
+                # If both a pass and shot are detected simultaneously (or within 1s), resolve ambiguity.
+                # Actually, PASS triggers on reception. SHOT triggers mid-flight (distance >= min_shot_distance).
+                # To prevent SHOT from masking PASS, we can just let them co-exist if they are fundamentally different events,
+                # but if they happen on the exact same frame, we can resolve.
+                # Usually they happen on different frames because Pass detects at reception, Shot detects in transit.
+                detected_events.extend(shot_events)
+                detected_events.extend(goal_events)
+                
+                # Phase 7E & 7E.1: Possession & Turnover Detection
+                possession_events = possession_tracker.process(
+                    frame_idx=frame_idx,
+                    timestamp=timestamp,
+                    tracked_items=tracked_items,
+                    ball_state=ball_state,
+                    ball_contact_event=ball_contact_event
+                )
+                
+                # Add basic IDs to possession events for db insertion
+                import uuid
+                for pe in possession_events:
+                    pe["id"] = f"evt_pos_{uuid.uuid4().hex[:8]}"
+                    pe["match_id"] = session.match_id
+                    
+                # Phase 7F: Player Analytics accumulation
+                player_analytics.process_frame(
+                    frame_idx=frame_idx,
+                    timestamp=timestamp,
+                    tracked_items=tracked_items,
+                    events=detected_events + possession_events
+                )
+                
+                detected_events.extend(possession_events)
                 
                 for ev in detected_events:
                     # Save to DB
@@ -319,6 +414,47 @@ async def run_detection_pipeline(
 
             with open(artifact_file, "w", encoding="utf-8") as f:
                 json.dump(summary, f, indent=2)
+                
+            tracking_results_file = sessions_dir / "tracking_results.json"
+            with open(tracking_results_file, "w", encoding="utf-8") as f:
+                json.dump({"session_id": session_id, "frames": tracking_records}, f)
+                
+            # Phase 7F: Save player analytics artifact
+            analytics_summary = player_analytics.get_summary()
+            analytics_summary["match_id"] = session.match_id
+            analytics_summary["session_id"] = session_id
+            analytics_file = sessions_dir / "analytics.json"
+            with open(analytics_file, "w", encoding="utf-8") as f:
+                json.dump(analytics_summary, f, indent=2)
+
+            # Phase 7G: Generate Match Summary
+            summary_service = MatchSummaryService()
+            db_events = db.query(MatchEvent).filter(MatchEvent.match_id == session.match_id).all()
+            events_dict_list = []
+            for ev in db_events:
+                events_dict_list.append({
+                    "id": ev.id,
+                    "event_type": ev.type,
+                    "player": ev.player,
+                    "metadata": json.loads(ev.metadata_json) if ev.metadata_json else {"state": ev.status}
+                })
+                
+            video_meta = {
+                "total_frames": total_frames,
+                "duration_seconds": vp.duration_seconds
+            }
+            
+            match_summary = summary_service.generate_summary(
+                session_id=session_id,
+                events=events_dict_list,
+                analytics_data=analytics_summary,
+                detections_meta=summary,
+                video_meta=video_meta
+            )
+            
+            match_summary_file = sessions_dir / "match_summary.json"
+            with open(match_summary_file, "w", encoding="utf-8") as f:
+                json.dump(match_summary, f, indent=2)
 
             # 6. Mark Session Completed
             session.status = "READY"
@@ -341,6 +477,7 @@ async def run_detection_pipeline(
             )
 
     except (VideoProcessingError, DetectionError) as e:
+        print(f"Detection error: {e}")
         session = db.query(AnalysisSession).filter(AnalysisSession.id == session_id).first()
         if session:
             session.status = "ERROR"
@@ -357,6 +494,9 @@ async def run_detection_pipeline(
         )
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"Unexpected error: {e}")
         session = db.query(AnalysisSession).filter(AnalysisSession.id == session_id).first()
         if session:
             session.status = "ERROR"
