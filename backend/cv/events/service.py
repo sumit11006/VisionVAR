@@ -89,27 +89,8 @@ class EventDetectionService:
                 self.current_possessor = player_info
                 self.possession_start_time = timestamp
                 
-                # Check for PASS_CANDIDATE
-                if prev_possessor["team"] != "unknown" and prev_possessor["team"] == player_info["team"]:
-                    events.append({
-                        "id": str(uuid.uuid4()),
-                        "match_id": match_id,
-                        "session_id": session_id,
-                        "event_type": "PASS_CANDIDATE",
-                        "timestamp": timestamp,
-                        "frame": frame_idx,
-                        "status": "candidate",
-                        "confidence": 0.6,
-                        "team": player_info["team"],
-                        "player": str(player_info["track_id"]),
-                        "metadata": {
-                            "passer_track_id": prev_possessor["track_id"],
-                            "receiver_track_id": player_info["track_id"]
-                        }
-                    })
-                
                 # Check for RECOVERY / TURNOVER
-                elif prev_possessor["team"] != "unknown" and player_info["team"] != "unknown" and prev_possessor["team"] != player_info["team"]:
+                if prev_possessor["team"] != "unknown" and player_info["team"] != "unknown" and prev_possessor["team"] != player_info["team"]:
                     # Turnover / Recovery
                     events.append({
                         "id": str(uuid.uuid4()),

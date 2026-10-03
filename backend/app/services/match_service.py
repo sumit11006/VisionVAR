@@ -16,6 +16,11 @@ class MatchService:
     def get_match(self, match_id: str) -> MatchResponse:
         match = self.db.query(Match).filter(Match.id == match_id).first()
         if not match:
+            from backend.app.models.session import AnalysisSession
+            session = self.db.query(AnalysisSession).filter(AnalysisSession.id == match_id).first()
+            if session and session.match_id:
+                match = self.db.query(Match).filter(Match.id == session.match_id).first()
+        if not match:
             raise HTTPException(status_code=404, detail=f"Match '{match_id}' not found.")
 
         return MatchResponse(
