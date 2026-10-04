@@ -78,6 +78,23 @@ def get_session_status(session_id: str, db: Session = Depends(get_db)):
     return service.get_status(session_id)
 
 
+from fastapi.responses import FileResponse
+from pathlib import Path
+from backend.app.core.config import settings
+
+@router.get(
+    "/sessions/{session_id}/tracking",
+    tags=["Analysis Sessions"],
+    summary="Get complete VOD tracking history",
+)
+def get_session_tracking(session_id: str):
+    file_path = Path(settings.SESSIONS_DIR) / session_id / "tracking_results.json"
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Tracking results not found or processing not complete")
+    return FileResponse(file_path)
+
+
+
 @router.post(
     "/sessions/{session_id}/detect",
     response_model=DetectionStartResponse,

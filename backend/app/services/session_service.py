@@ -42,6 +42,12 @@ class SessionService:
                 self.db.add(match)
                 self.db.flush()
 
+        # Validate video_id if provided
+        if req.video_id:
+            video = self.db.query(Video).filter(Video.id == req.video_id).first()
+            if not video:
+                raise HTTPException(status_code=400, detail=f"Video '{req.video_id}' not found.")
+
         session = AnalysisSession(
             id=session_id,
             match_id=match_id,
