@@ -129,9 +129,11 @@ User Query → Gemini → MCP Tool Call → VisionVAR Backend/Data → Gemini Re
 | Domain | Technologies |
 |:---|:---|
 | **Frontend** | Next.js (App Router), React, TypeScript, Tailwind CSS |
-| **Backend** | FastAPI, Python, SQLAlchemy, SQLite, WebSockets, Uvicorn |
+| **Backend** | FastAPI, Python, SQLAlchemy, WebSockets, Uvicorn |
+| **Database** | PostgreSQL (via Supabase) / SQLite (Local dev) |
 | **Computer Vision** | OpenCV, YOLOv8 (Ultralytics), ByteTrack, Homography, K-Means |
 | **AI** | Model Context Protocol (MCP), Google Gemini |
+| **Deployment** | Vercel (Frontend), Render / Hugging Face Spaces (Backend), Supabase (Database) |
 
 ---
 
