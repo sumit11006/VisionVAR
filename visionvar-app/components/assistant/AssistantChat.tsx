@@ -39,7 +39,8 @@ export default function AssistantChat() {
     setError(null);
     
     try {
-      const res = await fetch('http://localhost:8000/api/assistant/chat', {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const res = await fetch(`${API_BASE_URL}/assistant/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage, match_id: matchId, session_id: sessionId })
