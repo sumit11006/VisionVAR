@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import AppShell from '@/components/layout/AppShell';
 import TelemetryChip from '@/components/ui/TelemetryChip';
 import CameraAngleSwitcher from '@/components/controls/CameraAngleSwitcher';
 import LayerToggles from '@/components/controls/LayerToggles';
 import ScrubberTrack from '@/components/controls/ScrubberTrack';
-import { mockCameras } from '@/lib/mockData/match';
 import PitchSVGRadar from '@/components/radar/PitchSVGRadar';
 import StatusBadge from '@/components/ui/StatusBadge';
 import {
@@ -15,14 +14,17 @@ import {
   connectAnalysisWebSocket,
   startDetection,
   TrackedItem,
-  FrameTrackingMessage,
   ProcessingStatusMessage,
+  FrameTrackingMessage,
+  fetchTrackingHistory,
 } from '@/lib/api';
 import type { VideoMetadata, MatchSession } from '@/types';
 
 export default function LiveWorkspacePage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const sessionId = (params?.id as string) || 'UCL-2024-MCI-RMA-F';
+  const targetSeekTime = searchParams?.get('t');
 
   // Video stream & metadata state
   const [sessionData, setSessionData] = useState<MatchSession | null>(null);
@@ -37,6 +39,7 @@ export default function LiveWorkspacePage() {
   // Playback & Frame state
   const [currentFrame, setCurrentFrame] = useState<number>(0);
   const [currentSeconds, setCurrentSeconds] = useState<number>(0.0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true); // Since autoPlay is true
   // Live real tracking state
   const [trackedItems, setTrackedItems] = useState<TrackedItem[]>([]);
   const [inferenceMs, setInferenceMs] = useState<number | null>(null);
@@ -46,8 +49,19 @@ export default function LiveWorkspacePage() {
   const [isLiveWsConnected, setIsLiveWsConnected] = useState<boolean>(false);
   const [opticalCalibStatus, setOpticalCalibStatus] = useState<string>('Not available');
   const [ballStateInfo, setBallStateInfo] = useState<any>(null);
+  
+  // VOD Mode State
+  const [historicalData, setHistoricalData] = useState<Map<number, any> | null>(null);
+  const [isLiveMode, setIsLiveMode] = useState<boolean>(false);
+  
   const wsRef = useRef<WebSocket | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const lastRenderedFrameRef = useRef<number>(-1);
+  const isLiveModeRef = useRef<boolean>(false);
+  
+  useEffect(() => {
+    isLiveModeRef.current = isLiveMode;
+  }, [isLiveMode]);
 
   // Load session & video metadata from backend
   useEffect(() => {
@@ -80,6 +94,21 @@ export default function LiveWorkspacePage() {
       .catch(() => {
         // Fallback gracefully
       });
+      
+    // Fetch historical tracking data for VOD replay
+    fetchTrackingHistory(sessionId)
+      .then((data) => {
+        if (!isMounted || !data || !data.frames) return;
+        const frameMap = new Map<number, any>();
+        data.frames.forEach((f: any) => {
+          frameMap.set(f.frame_number, f);
+        });
+        setHistoricalData(frameMap);
+        setDetectionStatus('READY (VOD)');
+      })
+      .catch(() => {
+        // No tracking history yet
+      });
 
     return () => {
       isMounted = false;
@@ -93,34 +122,21 @@ export default function LiveWorkspacePage() {
       (data) => {
         const type = data.type as string;
         if (type === 'frame_tracking') {
+          if (!isLiveModeRef.current) {
+            setIsLiveMode(true);
+            setDetectionStatus('PROCESSING');
+          }
           const frameMsg = data as unknown as FrameTrackingMessage & { ball?: any };
+          
           setCurrentFrame(frameMsg.frame);
           setTrackedItems(frameMsg.tracked_items || []);
-          if (frameMsg.inference_time_ms) {
-            setInferenceMs(frameMsg.inference_time_ms);
-          }
+          if (frameMsg.inference_time_ms) setInferenceMs(frameMsg.inference_time_ms);
           if (frameMsg.tracked_items && frameMsg.tracked_items.length > 0) {
             const hasMapped = frameMsg.tracked_items.some((i: any) => i.mapping_status === 'mapped');
             setOpticalCalibStatus(hasMapped ? 'ACTIVE (Mapped)' : 'UNAVAILABLE');
           }
-          if (frameMsg.ball) {
-            setBallStateInfo(frameMsg.ball);
-          }
-          if (frameMsg.tracking_time_ms) {
-            setTrackingMs(frameMsg.tracking_time_ms);
-          }
-          if (frameMsg.total_frames) {
-            setTotalFrames(frameMsg.total_frames);
-          }
-          if (frameMsg.fps) {
-            setFps(frameMsg.fps);
-          }
-          if (frameMsg.duration_seconds) {
-            setDuration(frameMsg.duration_seconds);
-          }
-          if (frameMsg.width) setVideoWidth(frameMsg.width);
-          if (frameMsg.height) setVideoHeight(frameMsg.height);
-
+          if (frameMsg.ball) setBallStateInfo(frameMsg.ball);
+          
           const secs = frameMsg.timestamp !== undefined
             ? frameMsg.timestamp
             : (frameMsg.frame / (frameMsg.fps || fps || 30.0));
@@ -128,6 +144,13 @@ export default function LiveWorkspacePage() {
           if (videoRef.current && !videoRef.current.seeking) {
             videoRef.current.currentTime = secs;
           }
+          
+          if (frameMsg.tracking_time_ms) setTrackingMs(frameMsg.tracking_time_ms);
+          if (frameMsg.total_frames) setTotalFrames(frameMsg.total_frames);
+          if (frameMsg.fps) setFps(frameMsg.fps);
+          if (frameMsg.duration_seconds) setDuration(frameMsg.duration_seconds);
+          if (frameMsg.width) setVideoWidth(frameMsg.width);
+          if (frameMsg.height) setVideoHeight(frameMsg.height);
         } else if (type === 'processing_status') {
           const statusMsg = data as unknown as ProcessingStatusMessage;
           setDetectionStatus(statusMsg.status.toUpperCase());
@@ -138,6 +161,33 @@ export default function LiveWorkspacePage() {
           if (statusMsg.resolution) setResolution(statusMsg.resolution);
           if (statusMsg.width) setVideoWidth(statusMsg.width);
           if (statusMsg.height) setVideoHeight(statusMsg.height);
+        } else if (type === 'FRAME_UPDATE') {
+          const msg = data as any;
+          if (isLiveModeRef.current) {
+            setCurrentFrame(msg.frame);
+            if (msg.timestamp) setCurrentSeconds(msg.timestamp);
+          }
+        } else if (type === 'TRACKING_UPDATE') {
+          const msg = data as any;
+          if (isLiveModeRef.current) {
+            setTrackedItems(msg.tracked_items || []);
+            const hasMapped = (msg.tracked_items || []).some((i: any) => i.mapping_status === 'mapped' || i.pitch_position);
+            setOpticalCalibStatus(hasMapped ? 'ACTIVE (Mapped)' : 'UNAVAILABLE');
+          }
+        } else if (type === 'BALL_UPDATE') {
+          const msg = data as any;
+          if (isLiveModeRef.current) {
+            setBallStateInfo(msg.ball);
+          }
+        } else if (type === 'LIVE_METRICS') {
+          const msg = data as any;
+          if (msg.metrics.tracking_latency_ms) setTrackingMs(msg.metrics.tracking_latency_ms);
+          if (msg.metrics.detection_latency_ms) setInferenceMs(msg.metrics.detection_latency_ms);
+          // Set FPS from live source if available
+          if (msg.metrics.source_fps) setFps(msg.metrics.source_fps);
+        } else if (type === 'STREAM_STATUS') {
+          const msg = data as any;
+          setDetectionStatus(msg.status.toUpperCase());
         }
       },
       () => setIsLiveWsConnected(true),
@@ -151,8 +201,57 @@ export default function LiveWorkspacePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
+  // VOD Frame Synchronization Loop
+  useEffect(() => {
+    let animationFrameId: number;
+    const syncOverlay = () => {
+      if (!isLiveMode && videoRef.current && historicalData) {
+        const vTime = videoRef.current.currentTime;
+        const targetFrame = Math.floor(vTime * fps);
+        const frameData = historicalData.get(targetFrame);
+        
+        if (frameData) {
+          if (lastRenderedFrameRef.current !== targetFrame) {
+            lastRenderedFrameRef.current = targetFrame;
+            setTrackedItems(frameData.tracked_items || []);
+            if (frameData.ball_state) setBallStateInfo(frameData.ball_state);
+            setCurrentFrame(targetFrame);
+            setCurrentSeconds(vTime);
+            
+            const hasMapped = (frameData.tracked_items || []).some((i: any) => i.mapping_status === 'mapped');
+            setOpticalCalibStatus(hasMapped ? 'ACTIVE (Mapped)' : 'UNAVAILABLE');
+          }
+        }
+      }
+      animationFrameId = requestAnimationFrame(syncOverlay);
+    };
+
+    if (historicalData) {
+      syncOverlay();
+    }
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [historicalData, fps, isLiveMode]);
+
+  // Handle external seek query parameter
+  useEffect(() => {
+    if (targetSeekTime && videoRef.current && historicalData && !isLiveMode) {
+      const timeSecs = parseFloat(targetSeekTime);
+      if (!isNaN(timeSecs) && timeSecs >= 0) {
+        videoRef.current.currentTime = timeSecs;
+        setCurrentSeconds(timeSecs);
+        // We pause it so the user can review the incident
+        if (!videoRef.current.paused) {
+          videoRef.current.pause();
+        }
+      }
+    }
+  }, [targetSeekTime, historicalData, isLiveMode]);
+
   const handleStartRealDetection = async () => {
     try {
+      setIsLiveMode(true);
       setDetectionStatus('PROCESSING');
       setProgress(5);
       const res = await startDetection(sessionId, { frame_skip: 4, confidence_threshold: 0.25 });
@@ -233,9 +332,13 @@ export default function LiveWorkspacePage() {
                 <video
                   ref={videoRef}
                   src={videoStreamUrl}
-                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  className="absolute inset-0 w-full h-full"
                   muted
                   playsInline
+                  autoPlay
+                  controls
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
                 />
               ) : (
                 <div
@@ -287,15 +390,17 @@ export default function LiveWorkspacePage() {
               >
                 {detectionStatus === 'PROCESSING'
                   ? `YOLO RUNNING (${progress}%)`
+                  : historicalData !== null && !isLiveMode
+                  ? `VAR REPLAY • ${resolution}`
                   : resolution !== 'Pending analysis'
                   ? `${resolution} • ${fps.toFixed(1)} FPS`
                   : 'RAW VIDEO FEED'}
               </span>
               <StatusBadge
-                label={isLiveWsConnected ? 'LIVE FEED' : 'STANDBY'}
-                color={isLiveWsConnected ? 'emerald' : 'amber'}
-                ping
-                pulse
+                label={historicalData !== null && !isLiveMode ? 'REPLAY MODE' : isLiveWsConnected ? 'LIVE FEED' : 'STANDBY'}
+                color={historicalData !== null && !isLiveMode ? 'cyan' : isLiveWsConnected ? 'emerald' : 'amber'}
+                ping={isLiveWsConnected && isLiveMode}
+                pulse={isLiveWsConnected && isLiveMode}
               />
             </div>
             <div
@@ -420,25 +525,44 @@ export default function LiveWorkspacePage() {
             }}
           >
             {/* Scrubber scaled to actual video duration */}
-            <div className="w-full">
-              <ScrubberTrack
-                currentSeconds={currentSeconds}
-                durationSeconds={duration}
-                fps={fps}
-                totalFrames={totalFrames}
-                onValueChange={(sec, frame) => {
-                  setCurrentSeconds(sec);
-                  if (frame !== undefined) setCurrentFrame(frame);
-                  if (videoRef.current) {
-                    videoRef.current.currentTime = sec;
-                  }
-                }}
-              />
+            <div className="w-full flex items-center gap-4">
+              {!(isLiveMode || detectionStatus === 'PROCESSING') && (
+                <button
+                  onClick={() => {
+                    if (videoRef.current) {
+                      if (videoRef.current.paused) {
+                        videoRef.current.play();
+                      } else {
+                        videoRef.current.pause();
+                      }
+                    }
+                  }}
+                  className="w-10 h-10 rounded flex items-center justify-center shrink-0 hover:brightness-110 active:scale-95 transition-all text-[#0a0e14]"
+                  style={{ background: '#00e479', boxShadow: '0 0 10px rgba(0,228,121,0.4)' }}
+                >
+                  <span className="material-symbols-outlined text-[24px]">{isPlaying ? 'pause' : 'play_arrow'}</span>
+                </button>
+              )}
+              <div className="flex-1">
+                <ScrubberTrack
+                  currentSeconds={currentSeconds}
+                  durationSeconds={duration}
+                  fps={fps}
+                  totalFrames={totalFrames}
+                  onValueChange={(sec, frame) => {
+                    setCurrentSeconds(sec);
+                    if (frame !== undefined) setCurrentFrame(frame);
+                    if (videoRef.current) {
+                      videoRef.current.currentTime = sec;
+                    }
+                  }}
+                />
+              </div>
             </div>
 
             {/* Controls */}
             <div className="flex items-center justify-between">
-              <CameraAngleSwitcher cameras={mockCameras} initialCamera="main" />
+              <CameraAngleSwitcher cameras={[{ id: 'main', label: 'Main Tactical' }, { id: 'iso1', label: 'ISO Player 1' }]} initialCamera="main" />
               <LayerToggles />
             </div>
           </div>
@@ -458,7 +582,7 @@ export default function LiveWorkspacePage() {
               </span>
               <span className="text-[9px] font-mono text-[#849585]">2D RADAR</span>
             </div>
-            <div className="flex-1 relative">
+            <div className="flex-1 relative min-h-0">
               <PitchSVGRadar teamADots={teamADots} teamBDots={teamBDots} ballPos={mappedBall} height="h-full" />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <span className="px-2 py-1 rounded text-[9px] font-mono bg-[rgba(10,14,20,0.75)] text-[#849585] border border-[rgba(59,75,61,0.4)]">

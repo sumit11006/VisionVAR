@@ -6,32 +6,31 @@ import AppShell from '@/components/layout/AppShell';
 import EventCard from '@/components/events/EventCard';
 import ScrubberTrack from '@/components/controls/ScrubberTrack';
 import TransportControls from '@/components/controls/TransportControls';
-import { mockEvents } from '@/lib/mockData/events';
 import { fetchMatchEvents } from '@/lib/api';
-import type { MatchEvent } from '@/types';
+import type { MatchEvent, EventType } from '@/types';
 
 export default function TimelinePage() {
   const params = useParams();
-  const matchId = (params?.id as string) || 'UCL-2024-MCI-RMA-F';
-  const [events, setEvents] = useState<MatchEvent[]>(mockEvents);
+  const sessionId = (params?.id as string) || 'UCL-2024-MCI-RMA-F';
+  const matchId = sessionId; // using session id as match mapping for now
+  const [events, setEvents] = useState<MatchEvent[]>([]);
   const activeEventId = 'EVT-010';
 
   useEffect(() => {
     // 1. Fetch historical events from SQLite
     fetchMatchEvents(matchId)
       .then((data) => {
-        if (data && data.length > 0) {
+        if (data) {
           setEvents(data);
         }
       })
       .catch(() => {
-        // Fallback to mockEvents if failed
+        setEvents([]);
       });
   }, [matchId]);
 
   useEffect(() => {
     // 2. Connect WebSocket to stream live AI events (Phase 7A)
-    const sessionId = (params?.id as string) || 'default';
     if (sessionId) {
       const ws = new WebSocket(`ws://localhost:8000/ws/analysis/${sessionId}`);
       
@@ -138,7 +137,7 @@ export default function TimelinePage() {
            
            <div className="flex-1 overflow-y-auto p-4 space-y-3">
              {events.map(event => (
-               <EventCard key={event.id} event={event} isActive={event.id === activeEventId} />
+               <EventCard key={event.id} event={event} isActive={event.id === activeEventId} sessionId={sessionId} />
              ))}
            </div>
         </div>

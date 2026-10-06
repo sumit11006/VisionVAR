@@ -8,7 +8,8 @@ const statusConfig = {
 };
 
 export default function MatchSessionCard({ session }: { session: MatchSession }) {
-  const cfg = statusConfig[session.status];
+  const defaultCfg = { label: session.status?.toUpperCase() || 'UNKNOWN', color: '#888', bg: 'rgba(136,136,136,0.1)', border: 'rgba(136,136,136,0.4)' };
+  const cfg = (statusConfig as any)[session.status?.toUpperCase()] || defaultCfg;
 
   return (
     <div
@@ -83,23 +84,21 @@ export default function MatchSessionCard({ session }: { session: MatchSession })
         )}
 
         {/* CTA */}
-        {session.status === 'READY' ? (
-          <Link
-            href={`/sessions/${session.id}`}
-            className="mt-auto block text-center py-2 rounded text-label-md font-label-md font-bold transition-all hover:brightness-110 active:scale-95"
-            style={{ background: '#00ff88', color: '#003919', boxShadow: '0 0 12px rgba(0,255,136,0.35)' }}
-          >
-            Launch Workspace →
-          </Link>
-        ) : (
-          <button
-            disabled
-            className="mt-auto block w-full text-center py-2 rounded text-label-md font-label-md font-bold opacity-50 cursor-not-allowed"
-            style={{ background: '#262a31', color: '#b9cbb9', border: '1px solid rgba(59,75,61,0.4)' }}
-          >
-            {session.status === 'PROCESSING' ? 'Processing…' : 'View Archive →'}
-          </button>
-        )}
+        <Link
+          href={`/sessions/${session.id}`}
+          className={`mt-auto block text-center py-2 rounded text-label-md font-label-md font-bold transition-all hover:brightness-110 active:scale-95 ${
+            session.status === 'PROCESSING' ? 'animate-pulse' : ''
+          }`}
+          style={
+            session.status === 'READY'
+              ? { background: '#00ff88', color: '#003919', boxShadow: '0 0 12px rgba(0,255,136,0.35)' }
+              : session.status === 'PROCESSING'
+              ? { background: 'rgba(0,218,243,0.15)', color: '#00daf3', border: '1px solid rgba(0,218,243,0.5)' }
+              : { background: '#262a31', color: '#b9cbb9', border: '1px solid rgba(59,75,61,0.4)' }
+          }
+        >
+          {session.status === 'PROCESSING' ? 'View Live Feed →' : session.status === 'READY' ? 'Launch Workspace →' : 'View Archive →'}
+        </Link>
       </div>
     </div>
   );

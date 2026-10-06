@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import AppShell from '@/components/layout/AppShell';
 import BentoCard from '@/components/ui/BentoCard';
 import StatusBadge from '@/components/ui/StatusBadge';
-import { connectAnalysisWebSocket, FrameTrackingMessage, OffsideCandidate } from '@/lib/api';
+import { connectAnalysisWebSocket, FrameTrackingMessage, OffsideCandidate, fetchMatchEvents } from '@/lib/api';
 
 export default function OffsideReviewPage() {
   const params = useParams();
+  const router = useRouter();
   const sessionId = (params?.id as string) || 'UCL-2024-MCI-RMA-F';
 
   const [candidate, setCandidate] = useState<OffsideCandidate | null>(null);
@@ -16,6 +17,27 @@ export default function OffsideReviewPage() {
   const [timestamp, setTimestamp] = useState<number>(0);
 
   useEffect(() => {
+    // 1. Fetch historical offside candidate if analysis already finished
+    fetchMatchEvents(sessionId)
+      .then(events => {
+        if (events && events.length > 0) {
+          const offsideEvents = events.filter(e => e.type === 'OFFSIDE_CANDIDATE');
+          if (offsideEvents.length > 0) {
+            const latest = offsideEvents[offsideEvents.length - 1];
+            if (latest.metadata_json) {
+              try {
+                const offsideData = JSON.parse(latest.metadata_json) as OffsideCandidate;
+                setCandidate(offsideData);
+                setFrameId(latest.frameId || 0);
+                setTimestamp((latest.minute * 60) + latest.second);
+              } catch (e) {}
+            }
+          }
+        }
+      })
+      .catch(() => {});
+
+    // 2. Connect live WebSocket
     const ws = connectAnalysisWebSocket(
       sessionId,
       (data) => {
@@ -73,8 +95,10 @@ export default function OffsideReviewPage() {
         <div className="w-full lg:w-96 flex flex-col gap-4 overflow-y-auto">
           {/* Header Action */}
           <div className="flex justify-end gap-2">
-            <button className="px-4 py-2 rounded text-label-md font-label-md font-bold hover:brightness-110 active:scale-95" style={{ background: '#262a31', color: '#b9cbb9', border: '1px solid rgba(59,75,61,0.4)' }}>
-              REVIEW
+            <button 
+              onClick={() => router.push(`/sessions/${sessionId}?t=${timestamp}`)}
+              className="px-4 py-2 rounded text-label-md font-label-md font-bold hover:brightness-110 active:scale-95" style={{ background: '#262a31', color: '#b9cbb9', border: '1px solid rgba(59,75,61,0.4)' }}>
+              REVIEW IN VIDEO
             </button>
           </div>
 

@@ -4,23 +4,32 @@ import { useState, useEffect, useRef } from 'react';
 import AppShell from '@/components/layout/AppShell';
 import PipelineStageCard from '@/components/pipeline/PipelineStageCard';
 import MatchSessionCard from '@/components/pipeline/MatchSessionCard';
-import { mockPipelineStages, mockSessions } from '@/lib/mockData/match';
 import { fetchSessions, uploadVideo } from '@/lib/api';
 import type { MatchSession } from '@/types';
 
 import { useRouter } from 'next/navigation';
+import type { PipelineStage } from '@/types';
+
+const PIPELINE_STAGES: PipelineStage[] = [
+  { stage: 1, label: 'Video Ingestion', status: 'COMPLETE', progress: 100, detail: '4K/60FPS ProRes DECODE' },
+  { stage: 2, label: 'Player Tracking', status: 'COMPLETE', progress: 100, detail: 'YOLOv9 + ByteTrack' },
+  { stage: 3, label: 'Ball Tracking', status: 'ACTIVE', progress: 88, detail: 'Centroid Trajectory Lock' },
+  { stage: 4, label: 'Pitch Mapping', status: 'PENDING', progress: 0, detail: 'Homography 3D Projection' },
+  { stage: 5, label: 'Offside SAOT', status: 'PENDING', progress: 0, detail: 'Skeletal Mesh Engine' },
+  { stage: 6, label: 'Event Timeline', status: 'PENDING', progress: 0, detail: 'Contextual AI Sync' },
+];
 
 const LOG_LINES = [
   { time: '01:07:24.482', text: '[YOLO-v9] Ball centroid locked — Frame #121,418 | Velocity: 86.4 km/h | Trajectory: Forward-arc confirmed', color: '#00e479' },
   { time: '01:07:24.190', text: '[SAOT] Attacker-Defender axis computed: 34.08m vs 34.22m | Delta: +14.2cm | Uncertainty: ±1.8cm', color: '#00daf3' },
-  { time: '01:07:23.842', text: '[KALMAN] Player skeleton keypoints re-locked — Mount #19 confidence: 98.8% | Dier #15 confidence: 99.2%', color: '#c0c1ff' },
+  { time: '01:07:23.842', text: '[KALMAN] Player skeleton keypoints re-locked — Mount #19 | Dier #15', color: '#c0c1ff' },
   { time: '01:07:23.410', text: '[HOMO3D] Pitch homography matrix recalibrated — RMSE: 0.08px | V-points: 12', color: '#b9cbb9' },
   { time: '01:07:22.918', text: '[PIPELINE] Stage 3 (YOLOv9 Ball Tracking) → 88% complete | ETA to Stage 4: ~2.4s', color: '#849585' },
 ];
 
 export default function SessionsPage() {
   const router = useRouter();
-  const [sessions, setSessions] = useState<MatchSession[]>(mockSessions);
+  const [sessions, setSessions] = useState<MatchSession[]>([]);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -31,8 +40,8 @@ export default function SessionsPage() {
           setSessions(data);
         }
       })
-      .catch(() => {
-        // Fallback gracefully to mockSessions
+      .catch((err) => {
+        console.error("Failed to fetch sessions:", err);
       });
   }, []);
 
@@ -87,7 +96,7 @@ export default function SessionsPage() {
                 style={{ background: 'rgba(59,75,61,0.8)', border: '1px solid rgba(59,75,61,0.6)' }}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00daf3] animate-ping" />
-                SUB-MILLIMETER CALIBRATION ENGINE READY
+                CALIBRATION ENGINE READY
               </div>
               <h1 className="text-headline-lg font-headline-lg text-[#f1ffef] tracking-tight">
                 VisionVAR Neural Pitch Intelligence
@@ -217,7 +226,7 @@ export default function SessionsPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 pt-2">
-            {mockPipelineStages.map(stage => (
+            {PIPELINE_STAGES.map((stage) => (
               <PipelineStageCard key={stage.stage} stage={stage} />
             ))}
           </div>
@@ -225,25 +234,28 @@ export default function SessionsPage() {
 
         {/* Log terminal + Sessions */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Log terminal */}
-          <div
-            className="lg:col-span-2 rounded-xl p-4 flex flex-col gap-3"
-            style={{ background: '#0a0e14', border: '1px solid rgba(59,75,61,0.4)', fontFamily: 'JetBrains Mono, monospace' }}
-          >
-            <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(59,75,61,0.3)' }}>
-              <span className="material-symbols-outlined text-[#00e479] text-[16px]">terminal</span>
-              <span className="text-label-md font-label-md font-bold text-[#dfe2eb]">Live Inference Log</span>
-              <span className="ml-auto text-label-sm font-label-sm text-[#00daf3] flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00daf3] animate-ping" /> STREAMING
-              </span>
-            </div>
-            <div className="space-y-2 overflow-y-auto max-h-48">
-              {LOG_LINES.map((line, i) => (
-                <div key={i} className="flex gap-2 text-[10px] leading-relaxed">
-                  <span className="text-[#849585] shrink-0 font-mono">{line.time}</span>
-                  <span style={{ color: line.color }}>{line.text}</span>
-                </div>
-              ))}
+          {/* Left Column (Logs + System Status) */}
+          <div className="lg:col-span-2 flex flex-col gap-6 self-start">
+            {/* Log terminal */}
+            <div
+              className="rounded-xl p-4 flex flex-col gap-3"
+              style={{ background: '#0a0e14', border: '1px solid rgba(59,75,61,0.4)', fontFamily: 'JetBrains Mono, monospace' }}
+            >
+              <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(59,75,61,0.3)' }}>
+                <span className="material-symbols-outlined text-[#00e479] text-[16px]">terminal</span>
+                <span className="text-label-md font-label-md font-bold text-[#dfe2eb]">Live Inference Log</span>
+                <span className="ml-auto text-label-sm font-label-sm text-[#00daf3] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00daf3] animate-ping" /> STREAMING
+                </span>
+              </div>
+              <div className="space-y-2 overflow-y-auto h-64 pr-2">
+                {LOG_LINES.map((line, i) => (
+                  <div key={i} className="flex gap-2 text-[10px] leading-relaxed">
+                    <span className="text-[#849585] shrink-0 font-mono">{line.time}</span>
+                    <span style={{ color: line.color }}>{line.text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
