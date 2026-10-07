@@ -1,7 +1,9 @@
 import type { MatchEvent } from '@/types';
+import { useRouter } from 'next/navigation';
 
 const typeConfig: Record<string, { bg: string; border: string; text: string; icon: string; label: string }> = {
   GOAL:             { bg: 'rgba(250,204,21,0.2)', border: 'rgba(250,204,21,0.5)', text: '#facc15', icon: 'sports_soccer', label: 'GOAL' },
+  GOAL_CANDIDATE:   { bg: 'rgba(250,204,21,0.2)', border: 'rgba(250,204,21,0.5)', text: '#facc15', icon: 'sports_soccer', label: 'GOAL CANDIDATE' },
   GOAL_UNDER_REVIEW:{ bg: 'rgba(0,255,136,0.15)', border: 'rgba(0,228,121,0.6)', text: '#00e479', icon: 'sports_soccer', label: 'GOAL / POSSIBLE OFFSIDE' },
   YELLOW_CARD:      { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.4)', text: '#f59e0b', icon: 'style', label: 'YELLOW CARD' },
   RED_CARD:         { bg: 'rgba(147,0,10,0.3)', border: 'rgba(255,180,171,0.4)', text: '#ffdad6', icon: 'style', label: 'RED CARD' },
@@ -12,7 +14,10 @@ const typeConfig: Record<string, { bg: string; border: string; text: string; ico
   VAR_INTERVENTION: { bg: 'rgba(0,228,121,0.1)', border: 'rgba(0,228,121,0.4)', text: '#00e479', icon: 'live_tv', label: 'VAR INTERVENTION' },
   BALL_CONTACT:     { bg: 'rgba(0,218,243,0.1)', border: 'rgba(0,218,243,0.3)', text: '#00daf3', icon: 'sports_soccer', label: 'BALL CONTACT' },
   PASS_CANDIDATE:   { bg: 'rgba(192,193,255,0.1)', border: 'rgba(192,193,255,0.3)', text: '#c0c1ff', icon: 'arrow_forward', label: 'PASS CANDIDATE' },
+  SHOT_CANDIDATE:   { bg: 'rgba(250,128,114,0.1)', border: 'rgba(250,128,114,0.4)', text: '#fa8072', icon: 'sports_score', label: 'SHOT CANDIDATE' },
   POSSESSION_CANDIDATE: { bg: 'rgba(250,204,21,0.1)', border: 'rgba(250,204,21,0.3)', text: '#facc15', icon: 'timelapse', label: 'POSSESSION' },
+  POSSESSION_CHANGE: { bg: 'rgba(0,228,121,0.1)', border: 'rgba(0,228,121,0.3)', text: '#00e479', icon: 'swap_horiz', label: 'POSSESSION CHANGE' },
+  SHORT_TOUCH_POSSESSION: { bg: 'rgba(0,218,243,0.1)', border: 'rgba(0,218,243,0.3)', text: '#00daf3', icon: 'touch_app', label: 'ONE-TOUCH PASS' },
   BALL_RECOVERY_CANDIDATE: { bg: 'rgba(0,228,121,0.1)', border: 'rgba(0,228,121,0.3)', text: '#00e479', icon: 'replay', label: 'RECOVERY' },
   TURNOVER_CANDIDATE: { bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)', text: '#f59e0b', icon: 'sync_problem', label: 'TURNOVER' },
   OFFSIDE_CANDIDATE: { bg: 'rgba(0,218,243,0.1)', border: 'rgba(0,218,243,0.4)', text: '#00daf3', icon: 'flag', label: 'POTENTIAL OFFSIDE' },
@@ -28,9 +33,11 @@ const verdictStyle = (verdict: string | null) => {
 interface EventCardProps {
   event: MatchEvent;
   isActive?: boolean;
+  sessionId?: string;
 }
 
-export default function EventCard({ event, isActive }: EventCardProps) {
+export default function EventCard({ event, isActive, sessionId = 'UCL-2024-MCI-RMA-F' }: EventCardProps) {
+  const router = useRouter();
   const cfg = typeConfig[event.type] ?? typeConfig.VAR_INTERVENTION;
   const vStyle = verdictStyle(event.aiVerdict);
 
@@ -57,7 +64,6 @@ export default function EventCard({ event, isActive }: EventCardProps) {
             <span className="material-symbols-outlined text-[11px]">{cfg.icon}</span>
             {cfg.label}
           </span>
-        </div>
         </div>
         {/* AI Verdict / Status */}
         {(vStyle || event.status) && (
@@ -90,7 +96,11 @@ export default function EventCard({ event, isActive }: EventCardProps) {
             </div>
           </div>
           <button
-            className="px-3 py-1.5 rounded text-label-sm font-label-sm flex items-center gap-1.5 shrink-0 transition-all active:scale-95"
+            onClick={(e) => {
+               e.stopPropagation();
+               router.push(`/sessions/${sessionId}?t=${(event.minute * 60) + event.second}`);
+            }}
+            className="px-3 py-1.5 rounded text-label-sm font-label-sm flex items-center gap-1.5 shrink-0 transition-all active:scale-95 hover:brightness-110"
             style={{ background: '#31353c', color: '#00e479', border: '1px solid rgba(59,75,61,0.5)' }}
           >
             <span className="material-symbols-outlined text-[11px]">replay</span>

@@ -192,6 +192,18 @@ export async function fetchPlayerTelemetry(matchId: string, playerId: string): P
   return res.json();
 }
 
+export async function fetchMatchAnalytics(matchId: string) {
+  const res = await fetch(`${API_BASE_URL}/matches/${matchId}/analytics`);
+  if (!res.ok) throw new Error(`Failed to fetch match analytics for ${matchId}: ${res.statusText}`);
+  return res.json();
+}
+
+export async function fetchMatchSummary(matchId: string) {
+  const res = await fetch(`${API_BASE_URL}/matches/${matchId}/summary`);
+  if (!res.ok) throw new Error(`Failed to fetch match summary for ${matchId}: ${res.statusText}`);
+  return res.json();
+}
+
 export async function fetchFormation(matchId: string): Promise<CVNotImplementedResult> {
   const res = await fetch(`${API_BASE_URL}/matches/${matchId}/formation`);
   if (!res.ok) throw new Error(`Failed to fetch formation: ${res.statusText}`);
@@ -201,6 +213,15 @@ export async function fetchFormation(matchId: string): Promise<CVNotImplementedR
 export async function fetchOffside(matchId: string): Promise<CVNotImplementedResult> {
   const res = await fetch(`${API_BASE_URL}/matches/${matchId}/offside`);
   if (!res.ok) throw new Error(`Failed to fetch offside analysis: ${res.statusText}`);
+  return res.json();
+}
+
+export async function fetchTrackingHistory(sessionId: string) {
+  const res = await fetch(`${API_BASE_URL}/analysis/sessions/${sessionId}/tracking`);
+  if (!res.ok) {
+    if (res.status === 404) return null; // No tracking history yet
+    throw new Error(`Failed to fetch tracking history: ${res.statusText}`);
+  }
   return res.json();
 }
 

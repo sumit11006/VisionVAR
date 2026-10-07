@@ -28,10 +28,10 @@ export default function PitchSVGRadar({
 }: PitchSVGRadarProps) {
   return (
     <div
-      className={`relative w-full ${height} rounded overflow-hidden flex items-center justify-center`}
+      className={`relative w-full ${height} rounded overflow-hidden flex items-center justify-center p-2`}
       style={{ background: '#0a0e14', border: '1px solid rgba(59,75,61,0.4)' }}
     >
-      <svg className="w-full h-full p-2" viewBox="0 0 300 160">
+      <svg className="w-full h-full" viewBox="0 0 300 160" preserveAspectRatio="xMidYMid meet">
         {/* Boundary */}
         <rect x="2" y="2" width="296" height="156" fill="none" stroke="#3b4b3d" strokeWidth="1.2" />
         {/* Halfway */}
