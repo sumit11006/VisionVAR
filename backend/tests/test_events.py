@@ -51,12 +51,9 @@ def test_possession_and_pass_candidate():
     # Frame 3: Ball moves to p2 (Pass candidate)
     ball2 = {"state": "tracked", "pitch_position": {"x": 20.1, "y": 20.1}}
     events = service.process(30, 3.5, "sess", "match", [p1, p2], ball2, None, None)
-    
-    # Should yield Pass Candidate
+    # Pass Candidate logic is now in PassDetectionService, so EventDetectionService won't yield it
     pass_events = [e for e in events if e["event_type"] == "PASS_CANDIDATE"]
-    assert len(pass_events) == 1
-    assert pass_events[0]["metadata"]["passer_track_id"] == 1
-    assert pass_events[0]["metadata"]["receiver_track_id"] == 2
+    assert len(pass_events) == 0
 
 def test_turnover_and_recovery():
     service = EventDetectionService()
