@@ -7,6 +7,8 @@ export const metadata: Metadata = {
     'Next-generation AI football video analysis & automated VAR system. Real-time multi-camera synchronicity, skeletal limb keypoint tracking, and homography 3D pitch spatial reconstruction.',
 };
 
+import AssistantChat from '@/components/assistant/AssistantChat';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
@@ -24,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-[#10141a] text-[#dfe2eb] antialiased overflow-x-hidden">
         {children}
+        <AssistantChat />
       </body>
     </html>
   );

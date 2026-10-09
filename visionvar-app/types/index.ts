@@ -102,9 +102,12 @@ export type EventType =
   | 'BALL_CONTACT'
   | 'PASS_CANDIDATE'
   | 'POSSESSION_CANDIDATE'
+  | 'POSSESSION_CHANGE'
+  | 'SHORT_TOUCH_POSSESSION'
   | 'BALL_RECOVERY_CANDIDATE'
   | 'TURNOVER_CANDIDATE'
   | 'OFFSIDE_CANDIDATE'
+  | 'GOAL_CANDIDATE'
   | string;
 
 export interface MatchEvent {

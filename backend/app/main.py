@@ -50,7 +50,6 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 async def websocket_analysis(websocket: WebSocket, session_id: str):
     await analysis_websocket_endpoint(websocket, session_id)
 
-
 if __name__ == "__main__":
     import uvicorn
 
